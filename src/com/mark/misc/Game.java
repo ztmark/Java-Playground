@@ -1,3 +1,4 @@
+package com.mark.misc;
 
 import java.util.*;
 
@@ -26,16 +27,16 @@ public class Game {
            7   9   10   9
           11   0   0   12
          */
-        /*blocks[0] = new Block(Shape.VERTICAL,0,0);
-        blocks[1] = new Block(Shape.SQUARE,1,0);
-        blocks[2] = new Block(Shape.VERTICAL,3,0);
-        blocks[3] = new Block(Shape.VERTICAL,0,2);
-        blocks[4] = new Block(Shape.HORIZON,1,2);
-        blocks[5] = new Block(Shape.VERTICAL,3,2);
-        blocks[6] = new Block(Shape.SINGLE,1,3);
-        blocks[7] = new Block(Shape.SINGLE,2,3);
-        blocks[8] = new Block(Shape.SINGLE,0,4);
-        blocks[9] = new Block(Shape.SINGLE,3,4);*/
+        /*blocks[0] = new com.mark.misc.Block(com.mark.misc.Shape.VERTICAL,0,0);
+        blocks[1] = new com.mark.misc.Block(com.mark.misc.Shape.SQUARE,1,0);
+        blocks[2] = new com.mark.misc.Block(com.mark.misc.Shape.VERTICAL,3,0);
+        blocks[3] = new com.mark.misc.Block(com.mark.misc.Shape.VERTICAL,0,2);
+        blocks[4] = new com.mark.misc.Block(com.mark.misc.Shape.HORIZON,1,2);
+        blocks[5] = new com.mark.misc.Block(com.mark.misc.Shape.VERTICAL,3,2);
+        blocks[6] = new com.mark.misc.Block(com.mark.misc.Shape.SINGLE,1,3);
+        blocks[7] = new com.mark.misc.Block(com.mark.misc.Shape.SINGLE,2,3);
+        blocks[8] = new com.mark.misc.Block(com.mark.misc.Shape.SINGLE,0,4);
+        blocks[9] = new com.mark.misc.Block(com.mark.misc.Shape.SINGLE,3,4);*/
         /*
           4   2   2   6
           4   2   2   6

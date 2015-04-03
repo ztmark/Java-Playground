@@ -1,7 +1,5 @@
-package com.mark;
+package com.mark.problem;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -11,6 +9,9 @@ import java.util.Random;
  */
 public class RandNum {
 
+    /*
+    随机从0到1000中输出不重复的900个数
+     */
     public static void main(String[] args) {
         int[] nums = new int[1000];
         for (int i = 0; i < 1000; i++) {

@@ -1,6 +1,4 @@
-package com.mark;
-
-import java.util.Queue;
+package com.mark.problem;
 
 /**
  * Author: Mark

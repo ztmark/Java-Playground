@@ -1,3 +1,5 @@
+package com.mark.misc;
+
 public class Main {
 
     public static void main(String[] args) {

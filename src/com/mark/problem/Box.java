@@ -1,4 +1,4 @@
-package com.mark;
+package com.mark.problem;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -32,6 +32,12 @@ public class Box {
         return box.poll();
     }
 
+    /*
+    一个最多能装5个苹果的箱子
+    一个人不断向里面放苹果
+    一个人不断从里面拿苹果
+    模拟这一过程
+     */
     public static void main(String[] args) throws InterruptedException {
         Box box = new Box();
         Productor productor = new Productor(box);

@@ -1,4 +1,4 @@
-package com.mark;
+package com.mark.problem;
 
 import java.util.Random;
 

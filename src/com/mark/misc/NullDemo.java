@@ -1,3 +1,5 @@
+package com.mark.misc;
+
 /**
  * Author: Mark
  * Date  : 2015/3/13
