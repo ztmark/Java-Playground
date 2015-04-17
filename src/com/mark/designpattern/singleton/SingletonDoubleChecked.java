@@ -1,11 +1,13 @@
 package com.mark.designpattern.singleton;
 
+import java.io.Serializable;
+
 /**
  * Author: Mark
  * Date  : 2015/3/21
  * Time  : 20:17
  */
-public class SingletonDoubleChecked {
+public class SingletonDoubleChecked implements Serializable {
 
     private static volatile SingletonDoubleChecked instance;
 
@@ -24,6 +26,15 @@ public class SingletonDoubleChecked {
             }
         }
         return result;
+    }
+
+    private Object readResolve() {
+        return instance;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
     }
 
     // other methods
