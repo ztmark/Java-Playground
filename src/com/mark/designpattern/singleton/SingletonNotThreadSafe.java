@@ -28,7 +28,7 @@ public class SingletonNotThreadSafe {
             }
         }).start();
 
-        TimeUnit.MILLISECONDS.sleep(1000);  // 等待上面两个线程执行完毕
+        TimeUnit.MILLISECONDS.sleep(2000);  // 等待上面两个线程执行完毕
         System.out.println(instances[0] == instances[1]);  // false
     }
 
@@ -36,7 +36,22 @@ public class SingletonNotThreadSafe {
 
     private SingletonNotThreadSafe() {}
 
+
     public static SingletonNotThreadSafe getInstance() {
+        if (instance == null) {
+            try {
+                Thread.currentThread().sleep(1000); // 休眠，让另一个线程执行
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            synchronized (SingletonNotThreadSafe.class) {
+                instance = new SingletonNotThreadSafe();
+            }
+        }
+        return instance;
+    }
+
+    /*public static SingletonNotThreadSafe getInstance() {
         if (instance == null) {
             try {
                 Thread.currentThread().sleep(1000); // 休眠，让另一个线程执行
@@ -46,7 +61,7 @@ public class SingletonNotThreadSafe {
             instance = new SingletonNotThreadSafe();
         }
         return instance;
-    }
+    }*/
 
 
 }

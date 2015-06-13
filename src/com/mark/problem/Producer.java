@@ -7,12 +7,12 @@ import java.util.Random;
  * Date  : 2015/4/2
  * Time  : 19:50
  */
-public class Productor implements Runnable {
+public class Producer implements Runnable {
 
     private Box box;
     private Random random;
 
-    public Productor(Box box) {
+    public Producer(Box box) {
         this.box = box;
         random = new Random(47);
     }

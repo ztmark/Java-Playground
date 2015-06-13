@@ -40,9 +40,9 @@ public class Box {
      */
     public static void main(String[] args) throws InterruptedException {
         Box box = new Box();
-        Productor productor = new Productor(box);
+        Producer producer = new Producer(box);
         Consumer consumer = new Consumer(box);
-        new Thread(productor).start();
+        new Thread(producer).start();
         new Thread(consumer).start();
     }
 
