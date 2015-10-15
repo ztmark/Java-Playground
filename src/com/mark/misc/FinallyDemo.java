@@ -9,16 +9,16 @@ public class FinallyDemo {
 
     static int value = 0;
     static int inc() {
-        return value++;
+        return value++; // 返回的是++之前的值
     }
     static int dec() {
-        return value--;
+        return value--; // 返回的是--之前的值
     }
     static int getResult() {
         try {
-            return inc();
+            return inc(); // 先执行inc
         } finally {
-            return dec();
+            return dec(); // 返回dec的返回值
         }
     }
     //finally里面不允许有return/break/continue/throw等改变正常退出的逻辑
