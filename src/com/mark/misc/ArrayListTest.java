@@ -3,6 +3,7 @@ package com.mark.misc;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * Author: Mark
@@ -12,6 +13,19 @@ import java.util.Date;
 public class ArrayListTest {
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
+//        demo();
+        ArrayList<String> list = new ArrayList<>();
+        list.add(null);
+        list.add("hahah");
+        System.out.println(list.size());
+
+        LinkedList<String> linkedList = new LinkedList<>();
+        linkedList.add(null);
+        linkedList.add("what");
+        System.out.println(linkedList.size());
+    }
+
+    private static void demo() throws NoSuchFieldException, IllegalAccessException {
         ArrayList<String> list1 = new ArrayList<>();
         ArrayList<String> list2 = new ArrayList<>();
         ArrayList<Integer> list3 = new ArrayList<>();
