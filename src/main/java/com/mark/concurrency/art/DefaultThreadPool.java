@@ -1,3 +1,5 @@
+package com.mark.concurrency.art;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -83,7 +85,7 @@ public class DefaultThreadPool<Job extends Runnable> implements ThreadPool<Job> 
         for (int i = 0; i < numbers; i++) {
             Worker worker = new Worker();
             workers.add(worker);
-            Thread thread = new Thread(worker, "ThreadPool-Worker-" + threadNum.incrementAndGet());
+            Thread thread = new Thread(worker, "com.mark.concurrency.art.ThreadPool-Worker-" + threadNum.incrementAndGet());
             thread.start();
 
         }

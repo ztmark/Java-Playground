@@ -1,6 +1,7 @@
+package com.mark.concurrency.art;
+
 import java.sql.Connection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Author: Mark
