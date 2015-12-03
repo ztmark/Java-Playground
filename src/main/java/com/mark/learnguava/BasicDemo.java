@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.*;
  * Author: Mark
  * Date  : 15/12/3.
  */
-public class Demo1 {
+public class BasicDemo {
 
     public static void main(String[] args) {
 //        optionalTest();
