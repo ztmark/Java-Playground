@@ -1,7 +1,6 @@
 package com.mark.reflection;
 
 
-
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +13,25 @@ public class ReflectionDemo {
     public static void main(String[] args) throws Exception {
 //        innerClsDemo();
 //        arrayDemo();
+//        genericDemo();
 
+
+        MyClassLoad mcl = new MyClassLoad(ReflectionDemo.class.getClassLoader());
+        Class cls = mcl.loadClass("com.mark.reflection.TestObject");
+        Object obj = cls.newInstance();
+        TestObject testObject = new TestObject();
+        System.out.println(obj); //com.mark.reflection.TestObject@123772c4
+        Method method = cls.getMethod("method", null);
+        method.invoke(obj); // TestObject
+        System.out.println(testObject); //com.mark.reflection.TestObject@2d363fb3
+        testObject.method(); // TestObject
+        System.out.println(obj instanceof TestObject); // false
+        System.out.println(testObject instanceof TestObject); // true
+
+
+    }
+
+    private static void genericDemo() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         Class cls = Class.forName("com.mark.reflection.GenericClass");
         Method method = cls.getMethod("method1", null);
         System.out.println(method.getGenericReturnType());
