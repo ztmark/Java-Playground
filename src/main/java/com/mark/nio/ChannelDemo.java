@@ -1,0 +1,73 @@
+package com.mark.nio;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
+/**
+ * Author: Mark
+ * Date  : 15/12/22.
+ */
+public class ChannelDemo {
+
+    public static void main(String[] args) throws IOException {
+        /*FileChannel channel = FileChannel.open(Paths.get(".gitignore"), StandardOpenOption.READ);
+        ByteBuffer bb = ByteBuffer.allocate(2048);
+        channel.read(bb);
+        bb.flip();
+        String s = new String(bb.array(), StandardCharsets.UTF_8);
+        System.out.println(s);*/
+//        copyUseByteBuffer();
+//        copyUserChannelTransfer();
+//        loadWebPageUseSocket();
+        startSimpleServer();
+    }
+
+
+    private static void loadWebPageUseSocket() throws IOException {
+        try (FileChannel dest = FileChannel.open(Paths.get("pages.html"), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+            SocketChannel channel = SocketChannel.open(new InetSocketAddress("www.baidu.com", 80))) {
+            String request = "GET / HTTP/1.1\r\n\r\nHost:www.baidu.com\r\n\r\n";
+            ByteBuffer bb = ByteBuffer.wrap(request.getBytes(StandardCharsets.UTF_8));
+            channel.write(bb);
+            dest.transferFrom(channel, 0, Integer.MAX_VALUE);
+        }
+    }
+
+    private static void startSimpleServer() throws IOException {
+        ServerSocketChannel server = ServerSocketChannel.open();
+        server.bind(new InetSocketAddress("localhost", 8680));
+        while (true) {
+            try (SocketChannel channel = server.accept()) {
+                channel.write(ByteBuffer.wrap("hello there".getBytes(StandardCharsets.UTF_8)));
+            }
+        }
+    }
+
+    public static void copyUseByteBuffer() throws IOException {
+        ByteBuffer bb = ByteBuffer.allocate(10240);
+        try (FileChannel src = FileChannel.open(Paths.get(".gitignore"), StandardOpenOption.READ);
+            FileChannel dest = FileChannel.open(Paths.get("testgitignore"), StandardOpenOption.CREATE, StandardOpenOption.WRITE)){
+            while (src.read(bb) > 0 || bb.position() != 0) {
+                bb.flip();
+                dest.write(bb);
+                bb.compact();
+            }
+
+        }
+    }
+
+    public static void copyUserChannelTransfer() throws IOException {
+        try (FileChannel src = FileChannel.open(Paths.get(".gitignore"), StandardOpenOption.READ);
+             FileChannel dest = FileChannel.open(Paths.get("testgitignore"), StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+            src.transferTo(0, src.size(), dest);
+        }
+    }
+
+}
