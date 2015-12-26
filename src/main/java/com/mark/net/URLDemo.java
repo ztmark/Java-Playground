@@ -23,7 +23,7 @@ public class URLDemo {
     }
 
     private static void demo3() throws IOException {
-        URL url = new URL("http://www.baidu.com");
+        URL url = new URL("http://www.bbc.co.uk/search");
 
         String rawData = "q=java";
         String encodedData = URLEncoder.encode(rawData, StandardCharsets.UTF_8.displayName());
