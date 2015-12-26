@@ -1,4 +1,4 @@
-package com.mark.socket;
+package com.mark.net.socket;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;

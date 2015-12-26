@@ -1,4 +1,4 @@
-package com.mark.socket;
+package com.mark.net.socket;
 
 import java.net.*;
 import java.util.Enumeration;

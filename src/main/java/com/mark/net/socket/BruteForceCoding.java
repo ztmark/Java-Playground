@@ -1,4 +1,4 @@
-package com.mark.socket;
+package com.mark.net.socket;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
