@@ -9,15 +9,12 @@ import java.sql.*;
 public class JdbcDemo {
 
     public static void main(String[] args) {
-        Connection conn = null;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root", "root");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        basic();
+
+    }
+
+    private static void basic() {
+        Connection conn = getConnection();
         if (conn != null) {
             try {
                 DatabaseMetaData metaData = conn.getMetaData();
@@ -45,28 +42,48 @@ public class JdbcDemo {
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
-                if (rs != null) {
+                closeAll(conn, rs, statement);
+            }
+        }
+    }
+
+    private static void closeAll(Connection conn, ResultSet rs, Statement statement) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
                     try {
-                        rs.close();
+                        if (conn != null) {
+                            conn.close();
+                        }
                     } catch (SQLException e) {
                         e.printStackTrace();
-                    } finally {
-                        try {
-                            statement.close();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        } finally {
-                            try {
-                                conn.close();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-                        }
                     }
                 }
             }
         }
+    }
 
+    private static Connection getConnection() {
+        Connection conn = null;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root", "root");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conn;
     }
 
 
