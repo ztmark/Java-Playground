@@ -9,7 +9,23 @@ import java.sql.*;
 public class JdbcDemo {
 
     public static void main(String[] args) {
-        basic();
+//        basic();
+        Connection conn = getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT * FROM user WHERE id IN (1, 3 , 5)");
+            rs = ps.executeQuery();
+            if (rs != null) {
+                while (rs.next()) {
+                    System.out.println(rs.getLong("id") + " : " + rs.getString("nickname"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeAll(conn, rs, ps);
+        }
 
     }
 
