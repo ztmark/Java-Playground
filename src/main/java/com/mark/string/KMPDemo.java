@@ -32,12 +32,12 @@ public class KMPDemo {
     private static int kmp(String text, String pattern) {
         int[] next = next(pattern);
         int j = 0;
-        int cnt = 0;
+//        int cnt = 0;
         for (int i = 0; i < text.length(); i++) {
             while (true) {
-                cnt++;
+//                cnt++;
                 if (j == pattern.length()) {
-                    System.out.println("text["+text.length()+"] pattern["+pattern.length()+"] costs " + cnt);
+//                    System.out.println("text["+text.length()+"] pattern["+pattern.length()+"] costs " + cnt);
                     return i - j;
                 }
                 if (text.charAt(i) == pattern.charAt(j)) {
@@ -50,7 +50,7 @@ public class KMPDemo {
                 }
             }
         }
-        System.out.println("text["+text.length()+"] pattern["+pattern.length()+"] costs " + cnt);
+//        System.out.println("text["+text.length()+"] pattern["+pattern.length()+"] costs " + cnt);
         return -1;
     }
 
