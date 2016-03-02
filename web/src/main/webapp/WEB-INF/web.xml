@@ -8,8 +8,14 @@
 
 
   <servlet>
+    <!-- Spring MVC默认会在WEB-INF目录下找 <servlet-name>-servlet.xml的配置文件 这里就是 dispatcher-servlet.xml  -->
     <servlet-name>dispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <!--<init-param>-->
+      <!--<param-name>contextConfigLocation</param-name>-->
+      <!--<param-value>classpath:spring.xml</param-value>-->
+    <!--</init-param>-->
   </servlet>
 
   <servlet-mapping>
