@@ -12,5 +12,18 @@ public class StaticInitialize {
         System.out.println("in static initialize block.");
     }
 
+    public static void main(String[] args) {
+        System.out.println(H.word);
+    }
 
+
+}
+
+class H {
+
+    static {
+        System.out.println("in H");
+    }
+
+    static final String word = "hello world";
 }
