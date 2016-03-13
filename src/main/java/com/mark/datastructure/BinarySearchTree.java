@@ -2,6 +2,7 @@ package com.mark.datastructure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Author: Mark
@@ -16,18 +17,21 @@ public class BinarySearchTree {
         for (int i = 0; i < arr.length; i++) {
             bst.insert(arr[i]);
         }
-        System.out.println(bst.preorder());
-        System.out.println(bst.inorder());
-        System.out.println(bst.postorder());
+        System.out.println(bst.preorder()); // 63, 57, 48, 6, 61, 59, 64, 90, 80, 97
+        System.out.println(bst.inorder()); // 6, 48, 57, 59, 61, 63, 64, 80, 90, 97
+        System.out.println(bst.postorder()); // 6, 48, 59, 61, 57, 80, 97, 90, 64, 63
         System.out.println("57 successor is " + bst.successor(57));
         System.out.println("57 successor is " + bst.predecessor(57));
         System.out.println("min " + bst.min());
         System.out.println("max " + bst.max());
+        System.out.println("size " + bst.size());
         bst.remove(57);
+        System.out.println("size " + bst.size());
         System.out.println(bst.preorder());
         System.out.println(bst.inorder());
         System.out.println(bst.postorder());
         bst.remove(64);
+        System.out.println("size " + bst.size());
         System.out.println(bst.preorder());
         System.out.println(bst.inorder());
         System.out.println(bst.postorder());
@@ -77,6 +81,18 @@ public class BinarySearchTree {
         }
         return cur != null;
     }
+
+    public int size() {
+        return size(root);
+    }
+
+    private int size(Node root) {
+        if (root == null) {
+            return 0;
+        }
+        return 1 + size(root.left) + size(root.right);
+    }
+
 
     public boolean isEmpty() {
         return root == null;
@@ -208,7 +224,8 @@ public class BinarySearchTree {
 
 
     public List<Integer> preorder() {
-        return preOrder(root);
+//        return preOrder(root);
+        return preOrderNonRecursive();
     }
 
     private List<Integer> preOrder(Node root) {
@@ -222,8 +239,38 @@ public class BinarySearchTree {
         return order;
     }
 
+    private List<Integer> preOrderNonRecursive() {
+        List<Integer> order = new ArrayList<>();
+        if (root == null) {
+            return order;
+        }
+        Stack<Node> stack = new Stack<>();
+        stack.push(root);
+        order.add(root.value);
+        Node cur = root.left;
+        Node p;
+        while (!stack.isEmpty()) {
+            while (cur != null) {
+                order.add(cur.value);
+                stack.push(cur);
+                cur = cur.left;
+            }
+            while (!stack.isEmpty()) {
+                p = cur;
+                cur = stack.peek().right;
+                if (p == cur) {
+                    cur = stack.pop();
+                } else {
+                    break;
+                }
+            }
+        }
+        return order;
+    }
+
     public List<Integer> inorder() {
-        return inOrder(root);
+        //return inOrder(root);
+        return inOrderNonRecursive();
     }
 
     private List<Integer> inOrder(Node root) {
@@ -237,8 +284,30 @@ public class BinarySearchTree {
         return order;
     }
 
+    private List<Integer> inOrderNonRecursive() {
+        List<Integer> order = new ArrayList<>();
+        if (root == null) {
+            return order;
+        }
+        Stack<Node> stack = new Stack<>();
+        Node cur = root;
+        while (cur != null || !stack.isEmpty()) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            if (!stack.isEmpty()) {
+                cur = stack.pop();
+                order.add(cur.value);
+                cur = cur.right;
+            }
+        }
+        return order;
+    }
+
     public List<Integer> postorder() {
-        return postOrder(root);
+        return postOrderNonRecursive();
+//        return postOrder(root);
     }
 
     private List<Integer> postOrder(Node root) {
@@ -252,6 +321,35 @@ public class BinarySearchTree {
         return order;
     }
 
+    private List<Integer> postOrderNonRecursive() {
+        List<Integer> order = new ArrayList<>();
+        if (root == null) {
+            return order;
+        }
+        Stack<Node> stack = new Stack<>();
+        Node cur = root;
+        stack.push(cur);
+        cur = root.left;
+        Node p;
+        while (!stack.isEmpty()) {
+            while (cur != null) {
+                stack.add(cur);
+                cur = cur.left;
+            }
+            while (!stack.isEmpty()) {
+                p = cur;
+                cur = stack.peek().right;
+                if (p == cur) {
+                    cur = stack.pop();
+                    order.add(cur.value);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return order;
+    }
 
 
     private static class Node {
