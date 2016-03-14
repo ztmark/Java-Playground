@@ -1,8 +1,6 @@
 package com.mark.datastructure;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Author: Mark
@@ -13,12 +11,54 @@ public class BinarySearchTree {
 
     public static void main(String[] args) {
 //        testAll();
-        BinarySearchTree bst = new BinarySearchTree();
-        int[] arr = new int[] {63, 57, 64, 48, 61, 6, 59, 90, 97, 80};
-        for (int i = 0; i < arr.length; i++) {
-            bst.insert(arr[i]);
+//        testPreOrder();
+//        testInOrder();
+        testPostOrder();
+    }
+
+    private static void testPreOrder() {
+        Random random = new Random(System.currentTimeMillis());
+        for (int i = 0; i < 10; i++) {
+            int len = random.nextInt(10);
+            BinarySearchTree bst = new BinarySearchTree();
+            for (int j = 0; j < len; j++) {
+                bst.insert(random.nextInt(100));
+            }
+            List<Integer> l1 = bst.preOrder(bst.root);
+            List<Integer> l2 = bst.preOrderNonRecursive();
+            List<Integer> l3 = bst.preOrderNonRecursiveSimple();
+            System.out.println(l1.equals(l2));
+            System.out.println(l1.equals(l3));
+            System.out.println("========");
         }
-        System.out.println(bst.preOrderNonRecursive());
+    }
+
+    private static void testInOrder() {
+        Random random = new Random(System.currentTimeMillis());
+        for (int i = 0; i < 10; i++) {
+            int len = random.nextInt(10);
+            BinarySearchTree bst = new BinarySearchTree();
+            for (int j = 0; j < len; j++) {
+                bst.insert(random.nextInt(100));
+            }
+            List<Integer> l1 = bst.inOrder(bst.root);
+            List<Integer> l2 = bst.inOrderNonRecursive();
+            System.out.println(l1.equals(l2));
+        }
+    }
+
+    private static void testPostOrder() {
+        Random random = new Random(System.currentTimeMillis());
+        for (int i = 0; i < 10; i++) {
+            int len = random.nextInt(10);
+            BinarySearchTree bst = new BinarySearchTree();
+            for (int j = 0; j < len; j++) {
+                bst.insert(random.nextInt(100));
+            }
+            List<Integer> l1 = bst.postOrder(bst.root);
+            List<Integer> l2 = bst.postOrderNonRecursive();
+            System.out.println(l1.equals(l2));
+        }
     }
 
     private static void testAll() {
@@ -280,9 +320,29 @@ public class BinarySearchTree {
         return order;
     }
 
+    private List<Integer> preOrderNonRecursiveSimple() {
+        List<Integer> order = new ArrayList<>();
+        if (root == null) {
+            return order;
+        }
+        Stack<Node> stack = new Stack<>();
+        stack.push(root);
+        Node cur;
+        while (!stack.isEmpty()) {
+            cur = stack.pop();
+            order.add(cur.value);
+            if (cur.right != null) {
+                stack.push(cur.right);
+            }
+            if (cur.left != null) {
+                stack.push(cur.left);
+            }
+        }
+        return order;
+    }
+
     public List<Integer> inorder() {
-        //return inOrder(root);
-        return inOrderNonRecursive();
+        return inOrder(root);
     }
 
     private List<Integer> inOrder(Node root) {
@@ -318,8 +378,7 @@ public class BinarySearchTree {
     }
 
     public List<Integer> postorder() {
-        return postOrderNonRecursive();
-//        return postOrder(root);
+        return postOrder(root);
     }
 
     private List<Integer> postOrder(Node root) {
