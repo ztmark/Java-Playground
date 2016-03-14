@@ -12,6 +12,16 @@ public class BinarySearchTree {
 
 
     public static void main(String[] args) {
+//        testAll();
+        BinarySearchTree bst = new BinarySearchTree();
+        int[] arr = new int[] {63, 57, 64, 48, 61, 6, 59, 90, 97, 80};
+        for (int i = 0; i < arr.length; i++) {
+            bst.insert(arr[i]);
+        }
+        System.out.println(bst.preOrderNonRecursive());
+    }
+
+    private static void testAll() {
         BinarySearchTree bst = new BinarySearchTree();
         int[] arr = new int[] {63, 57, 64, 48, 61, 6, 59, 90, 97, 80};
         for (int i = 0; i < arr.length; i++) {
@@ -117,17 +127,19 @@ public class BinarySearchTree {
             }
         } else if (val.left != null) {
             Node max = maxNode(val.left);
-            int tmp = val.value;
-            val.value = max.value;
-            max.value = tmp;
+            swap(max, val);
             removeNode(max);
         } else {
             Node min = minNode(val.right);
-            int tmp = val.value;
-            val.value = min.value;
-            min.value = tmp;
+            swap(min, val);
             removeNode(min);
         }
+    }
+
+    private void swap(Node n1, Node n2) {
+        int tmp = n1.value;
+        n1.value = n2.value;
+        n2.value = tmp;
     }
 
     public int min() {
@@ -224,8 +236,8 @@ public class BinarySearchTree {
 
 
     public List<Integer> preorder() {
-//        return preOrder(root);
-        return preOrderNonRecursive();
+        return preOrder(root);
+//        return preOrderNonRecursive();
     }
 
     private List<Integer> preOrder(Node root) {
