@@ -1,4 +1,4 @@
-package com.mark.datastructure;
+package com.mark.datastructure.tree;
 
 import java.util.*;
 
