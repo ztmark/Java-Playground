@@ -10,7 +10,7 @@ import java.util.Queue;
 public class BFSPath {
 
     public static void main(String[] args) {
-        Graph graph = Graph.generateAGraph();
+        Graph graph = GraphBuilder.generateAGraph();
         BFSPath path = new BFSPath(graph, 3);
         System.out.println(path.hasPathTo(2));
         System.out.println(path.hasPathTo(8));

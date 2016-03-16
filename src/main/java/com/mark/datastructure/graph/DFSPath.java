@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class DFSPath {
 
     public static void main(String[] args) {
-        Graph graph = Graph.generateAGraph();
+        Graph graph = GraphBuilder.generateAGraph();
         DFSPath path = new DFSPath(graph, 3);
         System.out.println(path.hasPathTo(2));
         System.out.println(path.hasPathTo(7));
