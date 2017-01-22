@@ -27,8 +27,6 @@ public class ReflectionDemo {
         testObject.method(); // TestObject
         System.out.println(obj instanceof TestObject); // false
         System.out.println(testObject instanceof TestObject); // true
-
-
     }
 
     private static void genericDemo() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
