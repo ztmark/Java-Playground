@@ -3,9 +3,7 @@ package com.mark.nio;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -26,7 +24,44 @@ public class ChannelDemo {
 //        copyUseByteBuffer();
 //        copyUserChannelTransfer();
 //        loadWebPageUseSocket();
-        startSimpleServer();
+//        startSimpleServer();
+//        copyInOut();
+        copyInOut2();
+    }
+
+
+    private static void copyInOut() throws IOException {
+        WritableByteChannel wchannel = Channels.newChannel(System.out);
+        ReadableByteChannel rchannel = Channels.newChannel(System.in);
+
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        while (rchannel.read(buffer) != -1) {
+            buffer.flip();
+            wchannel.write(buffer);
+            buffer.compact();
+        }
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            wchannel.write(buffer);
+        }
+        wchannel.close();
+        rchannel.close();
+    }
+
+    private static void copyInOut2() throws IOException {
+        WritableByteChannel wchannel = Channels.newChannel(System.out);
+        ReadableByteChannel rchannel = Channels.newChannel(System.in);
+
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        while (rchannel.read(buffer) != -1) {
+            buffer.flip();
+            while (buffer.hasRemaining()) {
+                wchannel.write(buffer);
+            }
+            buffer.clear();
+        }
+        wchannel.close();
+        rchannel.close();
     }
 
 
