@@ -1,8 +1,16 @@
 package com.mark.io;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Author: Mark
@@ -11,9 +19,39 @@ import java.util.Date;
 public class IOTest1 {
 
     public static void main(String[] args) throws IOException {
-                demo1();
+//                demo1();
 //        demo2();
 //        demo3();
+
+//        calcSHA256();
+
+        Thread t1 = new Thread(() -> {
+            System.out.println("start");
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("done");
+        });
+        t1.start();
+        System.out.println("Main done");
+
+    }
+
+    private static void calcSHA256() throws IOException {
+        try {
+            InputStream in = new FileInputStream("pom.xml");
+            MessageDigest sha = MessageDigest.getInstance("SHA-256");
+            in = new DigestInputStream(in, sha);
+            int b;
+            while ((b = in.read()) != -1);
+            in.close();
+            final byte[] digest = sha.digest();
+            System.out.println(DatatypeConverter.printHexBinary(digest));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void demo3() {
