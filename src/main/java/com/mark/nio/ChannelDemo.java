@@ -7,6 +7,7 @@ import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Author: Mark
@@ -26,7 +27,10 @@ public class ChannelDemo {
 //        loadWebPageUseSocket();
 //        startSimpleServer();
 //        copyInOut();
-        copyInOut2();
+//        copyInOut2();
+
+        startNonblockingServer();
+
     }
 
 
@@ -81,6 +85,29 @@ public class ChannelDemo {
         while (true) {
             try (SocketChannel channel = server.accept()) {
                 channel.write(ByteBuffer.wrap("hello there".getBytes(StandardCharsets.UTF_8)));
+            }
+        }
+    }
+
+    private static void startNonblockingServer() throws IOException {
+        final ServerSocketChannel server = ServerSocketChannel.open();
+        server.bind(new InetSocketAddress(8680));
+        server.configureBlocking(false);
+        System.out.println("starting server " + server.getLocalAddress());
+        String msg = "Hello there this is " + server.getLocalAddress().toString();
+        ByteBuffer buffer = ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8));
+        while (true) {
+            try (SocketChannel channel = server.accept()) {
+                if (channel != null) {
+                    buffer.rewind();
+                    channel.write(buffer);
+                } else {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
