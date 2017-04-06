@@ -156,6 +156,13 @@
             <version>3.3.6</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jdeferred</groupId>
+            <artifactId>jdeferred-core</artifactId>
+            <version>1.2.5</version>
+        </dependency>
+
+
 
 
     </dependencies>

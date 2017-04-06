@@ -52,6 +52,8 @@ public class Mutex implements Lock {
     }
 
     private static class Sync extends AbstractQueuedSynchronizer {
+        private static final long serialVersionUID = 6835985381067286992L;
+
         // 是否处于占用状态
         @Override
         protected boolean isHeldExclusively() {
