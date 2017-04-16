@@ -64,9 +64,61 @@ public class EchoServer {
         }
     }
 
+    public void start1() throws IOException {
+        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        serverSocketChannel.bind(new InetSocketAddress(8680));
+        serverSocketChannel.configureBlocking(false);
+        Selector selector = Selector.open();
+        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+        System.out.println("Listening in localhost 8086");
+        while (true) {
+            selector.select();
+            final Set<SelectionKey> selectionKeys = selector.selectedKeys();
+            final Iterator<SelectionKey> iterator = selectionKeys.iterator();
+            while (iterator.hasNext()) {
+                final SelectionKey selectionKey = iterator.next();
+                iterator.remove();
+                try {
+                    if (selectionKey.isAcceptable()) {
+                        final ServerSocketChannel server = (ServerSocketChannel) selectionKey.channel();
+                        final SocketChannel client = server.accept();
+                        System.out.println("Accepted connection from " + client);
+                        if (client != null) {
+                            client.configureBlocking(false);
+                            final SelectionKey clientKey = client.register(selector, SelectionKey.OP_READ);
+                            clientKey.attach(ByteBuffer.allocate(100));
+                        }
+                    } else if (selectionKey.isReadable()) {
+                        System.out.println("reading");
+                        final SocketChannel client = (SocketChannel) selectionKey.channel();
+                        final ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
+                        client.read(buffer);
+                        final SelectionKey register = client.register(selector, SelectionKey.OP_WRITE);
+                        register.attach(buffer);
+                    } else if (selectionKey.isWritable()) {
+                        System.out.println("writing");
+                        SocketChannel client = (SocketChannel) selectionKey.channel();
+                        ByteBuffer buffer = (ByteBuffer) selectionKey.attachment();
+                        buffer.flip();
+                        do {
+                            final int count = client.write(buffer);
+                            if (count == 0) {
+                                break;
+                            }
+                        } while (buffer.hasRemaining());
+                    }
+                } catch (IOException e) {
+                    selectionKey.cancel();
+                    selectionKey.channel().close();
+                }
+            }
+        }
+    }
+
 
     public static void main(String[] args) throws IOException {
-        new EchoServer().start0();
+//        new EchoServer().start0();
+        new EchoServer().start1();
     }
 
 
