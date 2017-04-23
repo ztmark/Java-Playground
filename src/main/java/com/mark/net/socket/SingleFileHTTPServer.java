@@ -89,6 +89,7 @@ public class SingleFileHTTPServer {
                 }
                 if (request.toString().contains("HTTP/")) {
                     out.write(header);
+                    out.write("\r\n".getBytes());
                 }
                 out.write(content);
                 out.flush();
