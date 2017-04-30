@@ -9,8 +9,12 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import javax.net.ssl.HandshakeCompletedEvent;
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.security.cert.X509Certificate;
 
 /**
  * Author: Mark
@@ -31,6 +35,22 @@ public class HTTPSClient {
                 System.out.println(supportedCipherSuite);
             }
             System.out.println();
+
+            socket.addHandshakeCompletedListener(handshakeCompletedEvent -> {
+                final String cipherSuite = handshakeCompletedEvent.getCipherSuite();
+                System.out.println("-----");
+                System.out.println(cipherSuite);
+                try {
+                    final X509Certificate[] peerCertificateChain = handshakeCompletedEvent.getPeerCertificateChain();
+                    for (X509Certificate x509Certificate : peerCertificateChain) {
+                        System.out.println(x509Certificate);
+                    }
+                } catch (SSLPeerUnverifiedException e) {
+                    e.printStackTrace();
+                }
+
+                System.out.println("-----");
+            });
 
             Writer out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
 
