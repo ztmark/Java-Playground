@@ -6,7 +6,7 @@ package com.mark
  */
 
 fun main(args: Array<String>) {
-    println("Hello ${name}")
+    println("Hello ${name.toUpperCase()}")
 }
 
 val name: String = "Mark"
