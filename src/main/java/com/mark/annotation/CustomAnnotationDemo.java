@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * Author: Mark
  * Date  : 2017/5/27
  */
-@CustomAnnotationDemo.Identify("demo")
+@CustomAnnotationDemo.Identify(value = "demo")
 public class CustomAnnotationDemo {
 
     @Inherited
@@ -19,6 +19,10 @@ public class CustomAnnotationDemo {
     @Target({ElementType.TYPE, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Identify {
+
+        String a = ""; // 默认是 public static final
+
+        int b = 0;
 
         String value() default "";
     }
@@ -28,6 +32,8 @@ public class CustomAnnotationDemo {
             final Identify annotation = CustomAnnotationDemo.class.getAnnotation(Identify.class);
             final String value = annotation.value();
             System.out.println("CustomAnnotationDemo's identify is " + value);
+            System.out.println(Identify.a);
+            System.out.println(Identify.b);
         }
     }
 
