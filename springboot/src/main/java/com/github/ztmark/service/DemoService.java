@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
  * Date  : 2017/5/27
  */
 @Service
+@LogParam
 public class DemoService {
 
     private static final Logger logger = LoggerFactory.getLogger(DemoService.class);
@@ -23,7 +24,7 @@ public class DemoService {
         return "Hello " + name;
     }
 
-    @LogParam
+//    @LogParam
     public String greeting(Person person) {
 //        logger.info("greeting method {}", person.toString());
         return "Hello " + person.getName();
