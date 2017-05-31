@@ -44,4 +44,10 @@ public class SpringbootApplication implements CommandLineRunner {
         System.out.println(demoService.greeting(person));
         return person;
     }
+
+    @RequestMapping("/some/bad")
+    public String bad() {
+        return "Oops";
+    }
 }
+
