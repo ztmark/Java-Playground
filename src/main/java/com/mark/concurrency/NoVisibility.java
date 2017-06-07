@@ -27,7 +27,31 @@ public class NoVisibility {
 //        number = 32;
 //        ready = true;
 
-        CountDownLatch countDownLatch = new CountDownLatch(20);
+//        demo1();
+
+        new Thread() {
+            @Override
+            public void run() {
+                while (!ready) {
+                    System.out.println(ready);
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        TimeUnit.SECONDS.sleep(1);
+        ready = true;
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("====");
+        System.out.println(ready);
+
+    }
+
+    private static void demo1() throws InterruptedException {
+        final CountDownLatch countDownLatch = new CountDownLatch(20);
         for (int i = 0; i < 20; i++) {
             new Thread() {
                 @Override
