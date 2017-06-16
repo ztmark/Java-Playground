@@ -76,6 +76,38 @@ public class Master implements Watcher {
         zooKeeper.create("/master", serverId.getBytes(), OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, masterCreateCallback, null);
     }
 
+    void bootstrap() {
+        createParent("/workers", new byte[0]);
+        createParent("/assign", new byte[0]);
+        createParent("/tasks", new byte[0]);
+        createParent("/status", new byte[0]);
+    }
+
+    AsyncCallback.StringCallback createParentCallback = new AsyncCallback.StringCallback() {
+        @Override
+        public void processResult(int i, String path, Object ctx, String s1) {
+            switch (KeeperException.Code.get(i)) {
+                case CONNECTIONLOSS:
+                    createParent(path, (byte[]) ctx);
+                    break;
+                case OK:
+                    System.out.println("Parent created");
+                    break;
+                case NODEEXISTS:
+                    System.out.println("already exist");
+                    break;
+                default:
+                    System.out.println("something wrong");
+
+            }
+        }
+    };
+
+
+    void createParent(String path, byte[] data) {
+        zooKeeper.create(path, data, OPEN_ACL_UNSAFE, CreateMode.PERSISTENT, createParentCallback, data);
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException {
         final Master master = new Master();
         master.startZk();
