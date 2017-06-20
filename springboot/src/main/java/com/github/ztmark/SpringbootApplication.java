@@ -2,6 +2,7 @@ package com.github.ztmark;
 
 import com.github.ztmark.domain.Person;
 import com.github.ztmark.service.DemoService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.aop.PointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -36,6 +37,7 @@ public class SpringbootApplication implements CommandLineRunner {
         System.out.println(demoService.greeting(person));
     }
 
+    @ApiOperation(value = "return a person", response = Person.class)
     @RequestMapping("/person")
     public Person person(@RequestParam("name") String name) {
         Person person = new Person();
