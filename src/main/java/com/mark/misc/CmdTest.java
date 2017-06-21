@@ -32,17 +32,19 @@ public class CmdTest {
 //            e.printStackTrace();
 //        }
 
-//        File file = new File("pwd.txt");
-//        final PrintWriter printWriter = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
-//        for (int i = 10000000; i <= 99999999; i++) {
-//            printWriter.println(i);
-//        }
-//        printWriter.flush();
-//        printWriter.close();
-        final URL location = CmdTest.class.getProtectionDomain().getCodeSource().getLocation();
-        System.out.println(location.toURI());
-        final URL resource = CmdTest.class.getClassLoader().getResource("");
-        System.out.println(resource.toURI());
+        for (int j = 1; j <= 10; j++) {
+            File file = new File("pwd" + j + ".txt");
+            final PrintWriter printWriter = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
+            for (int i = 10000000 * (j - 1); i < (10000000 * j); i++) {
+                printWriter.println(i);
+            }
+            printWriter.flush();
+            printWriter.close();
+        }
+//        final URL location = CmdTest.class.getProtectionDomain().getCodeSource().getLocation();
+//        System.out.println(location.toURI());
+//        final URL resource = CmdTest.class.getClassLoader().getResource("");
+//        System.out.println(resource.toURI());
     }
 
 }
