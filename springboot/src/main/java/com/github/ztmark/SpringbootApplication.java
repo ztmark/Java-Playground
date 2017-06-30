@@ -8,10 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+@EnableSwagger2
 @RestController
 @SpringBootApplication
 public class SpringbootApplication implements CommandLineRunner {
@@ -27,6 +37,25 @@ public class SpringbootApplication implements CommandLineRunner {
 
     private final DemoService demoService;
 
+
+    @Bean
+    public Docket docket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .paths(PathSelectors.any())
+                .apis(RequestHandlerSelectors.any())
+                .build();
+
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder().title("Mark's spring boot api")
+                .contact(new Contact("Mark", "https://github.com/ztmark", "shuyumark@email.com"))
+                .description("just a test")
+                .version("1.0.0")
+                .build();
+    }
 
     @Override
     public void run(String... args) throws Exception {
