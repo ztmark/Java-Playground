@@ -26,7 +26,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @RestController
 @SpringBootApplication
-//@ImportResource("classpath*:/spring.xml")
+@ImportResource("classpath*:/spring.xml")
 public class SpringbootApplication implements CommandLineRunner {
 
     @Autowired
@@ -35,9 +35,10 @@ public class SpringbootApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
-        final SpringApplication springApplication = new SpringApplication(SpringbootApplication.class, "classpath*:/spring.xml");
-        springApplication.run(args);
-//        SpringApplication.run(SpringbootApplication.class, args);
+//        final SpringApplication springApplication = new SpringApplication(SpringbootApplication.class);
+//        springApplication.setSources(Sets.newHashSet("classpath*:/spring.xml"));
+//        springApplication.run(args);
+        SpringApplication.run(SpringbootApplication.class, args);
     }
 
     private final DemoService demoService;
