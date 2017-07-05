@@ -22,6 +22,9 @@ public class DemoServiceTest {
     @Autowired
     private DemoService demoService;
 
+    @Autowired
+    private PropertyService propertyService;
+
     @Test
     public void greeting() throws Exception {
         Person p = new Person();
@@ -33,6 +36,11 @@ public class DemoServiceTest {
     @Test
     public void greeting1() throws Exception {
         System.out.println(demoService.greeting("mark"));
+    }
+
+    @Test
+    public void testProperty() {
+        System.out.println(propertyService.getValue());
     }
 
 }

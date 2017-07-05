@@ -2,6 +2,7 @@ package com.github.ztmark;
 
 import com.github.ztmark.domain.Person;
 import com.github.ztmark.service.DemoService;
+import com.github.ztmark.service.PropertyService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.aop.PointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +26,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @RestController
 @SpringBootApplication
+//@ImportResource("classpath*:/spring.xml")
 public class SpringbootApplication implements CommandLineRunner {
 
     @Autowired
@@ -32,11 +35,19 @@ public class SpringbootApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringbootApplication.class, args);
+        final SpringApplication springApplication = new SpringApplication(SpringbootApplication.class, "classpath*:/spring.xml");
+        springApplication.run(args);
+//        SpringApplication.run(SpringbootApplication.class, args);
     }
 
     private final DemoService demoService;
 
+    private PropertyService propertyService;
+
+    @Autowired
+    public void setPropertyService(PropertyService propertyService) {
+        this.propertyService = propertyService;
+    }
 
     @Bean
     public Docket docket() {
@@ -64,6 +75,7 @@ public class SpringbootApplication implements CommandLineRunner {
         person.setName("Jim");
         person.setAge(23);
         System.out.println(demoService.greeting(person));
+        System.out.println(propertyService.getValue());
     }
 
     @ApiOperation(value = "return a person", response = Person.class)
