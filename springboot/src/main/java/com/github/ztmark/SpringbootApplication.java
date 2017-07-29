@@ -1,6 +1,7 @@
 package com.github.ztmark;
 
 import com.github.ztmark.domain.Person;
+import com.github.ztmark.service.AnotherPropertyService;
 import com.github.ztmark.service.DemoService;
 import com.github.ztmark.service.PropertyService;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +27,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @RestController
 @SpringBootApplication
-@ImportResource("classpath*:/spring.xml")
+//@ImportResource("classpath*:/spring.xml")
 public class SpringbootApplication implements CommandLineRunner {
 
     @Autowired
@@ -35,15 +36,22 @@ public class SpringbootApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
-//        final SpringApplication springApplication = new SpringApplication(SpringbootApplication.class);
+        final SpringApplication springApplication = new SpringApplication(SpringbootApplication.class, "classpath*:/*.xml");
 //        springApplication.setSources(Sets.newHashSet("classpath*:/spring.xml"));
-//        springApplication.run(args);
-        SpringApplication.run(SpringbootApplication.class, args);
+        springApplication.run(args);
+//        SpringApplication.run(SpringbootApplication.class, args);
     }
 
     private final DemoService demoService;
 
     private PropertyService propertyService;
+
+    private AnotherPropertyService anotherPropertyService;
+
+    @Autowired
+    public void setAnotherPropertyService(AnotherPropertyService anotherPropertyService) {
+        this.anotherPropertyService = anotherPropertyService;
+    }
 
     @Autowired
     public void setPropertyService(PropertyService propertyService) {
@@ -77,6 +85,7 @@ public class SpringbootApplication implements CommandLineRunner {
         person.setAge(23);
         System.out.println(demoService.greeting(person));
         System.out.println(propertyService.getValue());
+        System.out.println(anotherPropertyService.getRemote());
     }
 
     @ApiOperation(value = "return a person", response = Person.class)
