@@ -1,9 +1,18 @@
 package com.mark.nio;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -22,14 +31,17 @@ public class ChannelDemo {
         bb.flip();
         String s = new String(bb.array(), StandardCharsets.UTF_8);
         System.out.println(s);*/
-//        copyUseByteBuffer();
-//        copyUserChannelTransfer();
 //        loadWebPageUseSocket();
 //        startSimpleServer();
 //        copyInOut();
 //        copyInOut2();
 
-        startNonblockingServer();
+//        startNonblockingServer();
+
+
+//        generateFile();
+//        copyUseByteBuffer();
+//        copyUseChannelTransfer();
 
     }
 
@@ -113,9 +125,10 @@ public class ChannelDemo {
     }
 
     public static void copyUseByteBuffer() throws IOException {
+        final long start = System.currentTimeMillis();
         ByteBuffer bb = ByteBuffer.allocate(10240);
-        try (FileChannel src = FileChannel.open(Paths.get(".gitignore"), StandardOpenOption.READ);
-            FileChannel dest = FileChannel.open(Paths.get("testgitignore"), StandardOpenOption.CREATE, StandardOpenOption.WRITE)){
+        try (FileChannel src = FileChannel.open(Paths.get("testfile"), StandardOpenOption.READ);
+            FileChannel dest = FileChannel.open(Paths.get("testfile_backup_old"), StandardOpenOption.CREATE, StandardOpenOption.WRITE)){
             while (src.read(bb) > 0 || bb.position() != 0) {
                 bb.flip();
                 dest.write(bb);
@@ -123,12 +136,42 @@ public class ChannelDemo {
             }
 
         }
+        long duration = System.currentTimeMillis() - start;
+        System.out.println("duration : " + duration + " millis");
     }
 
-    public static void copyUserChannelTransfer() throws IOException {
-        try (FileChannel src = FileChannel.open(Paths.get(".gitignore"), StandardOpenOption.READ);
-             FileChannel dest = FileChannel.open(Paths.get("testgitignore"), StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+    public static void copyUseChannelTransfer() throws IOException {
+        final long start = System.currentTimeMillis();
+
+        try (FileChannel src = FileChannel.open(Paths.get("testfile"), StandardOpenOption.READ);
+             FileChannel dest = FileChannel.open(Paths.get("testfile_backup_new"), StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
             src.transferTo(0, src.size(), dest);
+        }
+        long duration = System.currentTimeMillis() - start;
+        System.out.println("duration : " + duration + " millis");
+    }
+
+    public static void generateFile() throws IOException {
+        File file = new File("testfile");
+
+        if (!file.exists()) {
+            final boolean newFile = file.createNewFile();
+            if (!newFile) {
+                System.out.println("make file failed");
+                return;
+            }
+        }
+
+        try (final BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))){
+            for (int i = 0; i < 10000000; i++) {
+                bufferedWriter.write("what are you doing hahahhahahahahahlallalalalal\n");
+            }
+            bufferedWriter.flush();
+            final long length = file.length();
+            System.out.println(length + " byte");
+            System.out.println(length / 1024 / 1024);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
