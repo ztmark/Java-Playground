@@ -2,10 +2,10 @@ package com.github.ztmark;
 
 import com.github.ztmark.domain.Person;
 import com.github.ztmark.service.AnotherPropertyService;
+import com.github.ztmark.service.DataGeneratorService;
 import com.github.ztmark.service.DemoService;
 import com.github.ztmark.service.PropertyService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.aop.PointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,7 +27,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @RestController
 @SpringBootApplication
-//@ImportResource("classpath*:/spring.xml")
+@ImportResource("classpath*:/*.xml")
 public class SpringbootApplication implements CommandLineRunner {
 
     @Autowired
@@ -36,7 +36,7 @@ public class SpringbootApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
-        final SpringApplication springApplication = new SpringApplication(SpringbootApplication.class, "classpath*:/*.xml");
+        final SpringApplication springApplication = new SpringApplication(SpringbootApplication.class);
 //        springApplication.setSources(Sets.newHashSet("classpath*:/spring.xml"));
         springApplication.run(args);
 //        SpringApplication.run(SpringbootApplication.class, args);
@@ -48,6 +48,8 @@ public class SpringbootApplication implements CommandLineRunner {
 
     private AnotherPropertyService anotherPropertyService;
 
+    private DataGeneratorService generatorService;
+
     @Autowired
     public void setAnotherPropertyService(AnotherPropertyService anotherPropertyService) {
         this.anotherPropertyService = anotherPropertyService;
@@ -56,6 +58,11 @@ public class SpringbootApplication implements CommandLineRunner {
     @Autowired
     public void setPropertyService(PropertyService propertyService) {
         this.propertyService = propertyService;
+    }
+
+    @Autowired
+    public void setGeneratorService(DataGeneratorService generatorService) {
+        this.generatorService = generatorService;
     }
 
     @Bean
@@ -95,6 +102,7 @@ public class SpringbootApplication implements CommandLineRunner {
         person.setName(name);
         person.setAge(23);
         System.out.println(demoService.greeting(person));
+        generatorService.doSomething(person.toString());
         return person;
     }
 
