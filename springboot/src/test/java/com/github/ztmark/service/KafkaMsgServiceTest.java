@@ -1,5 +1,8 @@
 package com.github.ztmark.service;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.concurrent.TimeUnit;
 
 import org.junit.ClassRule;
@@ -31,11 +34,13 @@ public class KafkaMsgServiceTest {
     @Test
     public void test() {
         generatorService.doSomething("a test msg");
+
         try {
-            TimeUnit.SECONDS.sleep(1);
+            consumerService.getLatch().await(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        assertThat(consumerService.getLatch().getCount(), is(0L));
     }
 
 }
