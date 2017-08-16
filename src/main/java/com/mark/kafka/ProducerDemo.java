@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.Metric;
@@ -18,9 +19,9 @@ public class ProducerDemo {
     public static void main(String[] args) throws InterruptedException {
         ProducerRecord<String, String> record = new ProducerRecord<String, String>("test", "just a message 4");
         Properties kafkaProperties = new Properties();
-        kafkaProperties.put("bootstrap.servers", "localhost:9092");
-        kafkaProperties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        kafkaProperties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        kafkaProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         final KafkaProducer<String, String> producer = new KafkaProducer<>(kafkaProperties);
 
         try {
