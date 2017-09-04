@@ -95,13 +95,14 @@ public class SpringbootApplication implements CommandLineRunner {
                 .build();
     }
 
+
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapservers;
+
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfig());
     }
-
-    @Value("${spring.kafka.bootstrap-servers}")
-    private String bootstrapservers;
 
     @Bean
     public Map<String, Object> consumerConfig() {
