@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
+import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -85,6 +86,15 @@ public class JsoupDemoTest {
         driver.get("https://mp.weixin.qq.com/s?timestamp=1504602128&src=3&ver=1&signature=OtHbNzOh6VuPwsT6trxMdGi3LA-o3JHaSpDd4yCnED9e50FdOjyFzv*Yv9j8KupGRy5Cy6*ctNFwwOUI9Ks-bZdXQwkAp5XCKlMt3zdj60qR9mgij30-N4E3ylMERktexsDykFduPBaNpxcWIzme*C2BVhQl2V4Otbka0Jp2i3c=");
         final Document document = Jsoup.parse(driver.getPageSource());
         final Element content = document.getElementsByClass("rich_media_content").first();
+
+        final String plainText = new HtmlToPlainText().getPlainText(content);
+        System.out.println(plainText);
+
+        System.out.println("==============");
+        System.out.println("==============");
+        System.out.println("==============");
+        System.out.println("==============");
+
         final String s = delHTMLTag(content.toString());
         System.out.println(s);
     }
