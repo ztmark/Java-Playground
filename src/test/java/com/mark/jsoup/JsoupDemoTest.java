@@ -21,6 +21,8 @@ import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import org.junit.Test;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.WebDriver;
 
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 import com.machinepublishers.jbrowserdriver.ProxyConfig;
@@ -28,6 +30,10 @@ import com.machinepublishers.jbrowserdriver.RequestHeaders;
 import com.machinepublishers.jbrowserdriver.Settings;
 import com.machinepublishers.jbrowserdriver.Timezone;
 import com.machinepublishers.jbrowserdriver.UserAgent;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 
 /**
  * Author: Mark
@@ -35,11 +41,48 @@ import com.machinepublishers.jbrowserdriver.UserAgent;
  */
 public class JsoupDemoTest {
 
+    @Test
+    public void ts() throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("http://weixin.sogou.com/weixin?type=1&query=%E9%92%B1%E5%A0%82%E4%B8%80%E5%A7%90&ie=utf8&s_from=input&_sug_=y&_sug_type_=")
+                .get()
+                .addHeader("cookie", "SUV=001D01C573C802E05701CC1D34B1C320; SUID=FA4CEC7363138B0A58511E1E000CE4FF; wuid=AAF9mHuzFQAAAAqLE2NEdg4ApwM=; ABTEST=0|1504581511|v1; " +
+                        "SNUID=5AEC4CD2A0A5F9C90F2EDBE5A1BC13C9; IPLOC=CN3301; weixinIndexVisited=1; ld=okllllllll2BrXjslllllVumt3DllllltMeGMkllll9lllllxylll5@@@@@@@@@@; " +
+                        "usid=FA4CEC731418980A0000000059AE70B0; JSESSIONID=aaabdIhurDvwScKo-rr5v; PHPSESSID=ccvd593qtt3fu7tlfvbuboarq3; SUIR=5AEC4CD2A0A5F9C90F2EDBE5A1BC13C9; sct=5")
+                .addHeader("cache-control", "no-cache")
+                .addHeader("postman-token", "91a7858f-3560-1e14-04d1-d096088e56f1")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        final String string = response.body().string();
+        System.out.println(string);
+    }
+
 
     @Test
     public void get_page_url() {
-        final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME).timezone(Timezone.ASIA_SHANGHAI)
-                                                                 /*.proxy(new ProxyConfig(ProxyConfig.Type.HTTP, "127.0.0.1", 1087))*/.build());
+        final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME).requestHeaders(RequestHeaders.CHROME)
+                                                                 .proxy(new ProxyConfig(ProxyConfig.Type.HTTP, "125.121.113.158", 808)).build());
+//        final WebDriver.Options manage = driver.manage();
+//        if (manage != null) {
+//            final Cookie suv = new Cookie("SUV", "001D01C573C802E05701CC1D34B1C320");
+//            suv.validate();
+//            manage.addCookie(suv);
+//            manage.addCookie(new Cookie("SUID", "FA4CEC7363138B0A58511E1E000CE4FF"));
+//            manage.addCookie(new Cookie("wuid", "AAF9mHuzFQAAAAqLE2NEdg4ApwM="));
+//            manage.addCookie(new Cookie("ABTEST", "0|1504581511|v1"));
+//            manage.addCookie(new Cookie("SNUID", "5AEC4CD2A0A5F9C90F2EDBE5A1BC13C9"));
+//            manage.addCookie(new Cookie("IPLOC", "CN3301"));
+//            manage.addCookie(new Cookie("weixinIndexVisited", "1"));
+//            manage.addCookie(new Cookie("ld", "okllllllll2BrXjslllllVumt3DllllltMeGMkllll9lllllxylll5@@@@@@@@@@"));
+//            manage.addCookie(new Cookie("usid", "FA4CEC731418980A0000000059AE70B0"));
+//            manage.addCookie(new Cookie("JSESSIONID", "aaabdIhurDvwScKo-rr5v"));
+//            manage.addCookie(new Cookie("PHPSESSID", "ccvd593qtt3fu7tlfvbuboarq3"));
+//            manage.addCookie(new Cookie("SUIR", "5AEC4CD2A0A5F9C90F2EDBE5A1BC13C9"));
+//            manage.addCookie(new Cookie("sct", "5"));
+//        }
 
         final List<String> urlLists = Arrays.asList("http://weixin.sogou.com/weixin?type=1&query=%E4%B8%89%E8%81%94%E7%94%9F%E6%B4%BB%E5%91%A8%E5%88%8A&ie=utf8&s_from=input&_sug_=n&_sug_type_=",
                 "http://weixin.sogou.com/weixin?type=1&query=%E5%87%A4%E5%87%B0%E7%A7%91%E6%8A%80&ie=utf8&s_from=input&_sug_=y&_sug_type_=",
@@ -70,7 +113,7 @@ public class JsoupDemoTest {
 
     @Test
     public void get_article_url() throws IOException {
-        JBrowserDriver driver = new JBrowserDriver(Settings.builder().timezone(Timezone.ASIA_SHANGHAI).build());
+        JBrowserDriver driver = new JBrowserDriver(Settings.builder().requestHeaders(RequestHeaders.CHROME).proxy(new ProxyConfig(ProxyConfig.Type.HTTP, "125.121.113.158", 808)).build());
         driver.get("https://mp.weixin.qq.com/profile?src=3&timestamp=1504583131&ver=1&signature=33uh3zsZYPHNwW6fGu*vFp3FE0rOMtA82o8ZUHSy4Gy1MFWxOnh437UsYVAN7pDgllQ2F5HrwCg2RETEyBaxXg==");
         final Document document = Jsoup.parse(driver.getPageSource());
         final Elements list = document.getElementsByTag("h4");
@@ -118,7 +161,7 @@ public class JsoupDemoTest {
     public void get_one_article_text() {
         final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME)
                                                                  .requestHeaders(RequestHeaders.CHROME).timezone(Timezone.ASIA_SHANGHAI).build());
-        driver.get("https://mp.weixin.qq.com/s?timestamp=1504602128&src=3&ver=1&signature=OtHbNzOh6VuPwsT6trxMdGi3LA-o3JHaSpDd4yCnED9e50FdOjyFzv*Yv9j8KupGRy5Cy6*ctNFwwOUI9Ks-bZdXQwkAp5XCKlMt3zdj60qR9mgij30-N4E3ylMERktexsDykFduPBaNpxcWIzme*C2BVhQl2V4Otbka0Jp2i3c=");
+        driver.get("https://mp.weixin.qq.com/s?src=11&timestamp=1504689136&ver=376&signature=fFR98f*xvWhEAKIc49pDYAujm321NooqIbl5JNTsbQLvhFkFTmOtjoxuXM05OczJg0zJKMFP600onU0LbOhjc8uyFmZMSbf*iUJLBT6JoFcuBF-k2Sk41kdNU9*Hnt2l&new=1");
         final Document document = Jsoup.parse(driver.getPageSource());
         final Element content = document.getElementsByClass("rich_media_content").first();
 
