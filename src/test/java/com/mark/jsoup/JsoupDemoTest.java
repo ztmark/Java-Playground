@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.jsoup.select.Elements;
 import org.junit.Test;
 
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
+import com.machinepublishers.jbrowserdriver.ProxyConfig;
 import com.machinepublishers.jbrowserdriver.RequestHeaders;
 import com.machinepublishers.jbrowserdriver.Settings;
 import com.machinepublishers.jbrowserdriver.Timezone;
@@ -33,8 +35,41 @@ import com.machinepublishers.jbrowserdriver.UserAgent;
  */
 public class JsoupDemoTest {
 
+
     @Test
-    public void testDemo1() throws IOException {
+    public void get_page_url() {
+        final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME).timezone(Timezone.ASIA_SHANGHAI)
+                                                                 /*.proxy(new ProxyConfig(ProxyConfig.Type.HTTP, "127.0.0.1", 1087))*/.build());
+
+        final List<String> urlLists = Arrays.asList("http://weixin.sogou.com/weixin?type=1&query=%E4%B8%89%E8%81%94%E7%94%9F%E6%B4%BB%E5%91%A8%E5%88%8A&ie=utf8&s_from=input&_sug_=n&_sug_type_=",
+                "http://weixin.sogou.com/weixin?type=1&query=%E5%87%A4%E5%87%B0%E7%A7%91%E6%8A%80&ie=utf8&s_from=input&_sug_=y&_sug_type_=",
+                "http://weixin.sogou.com/weixin?type=1&s_from=input&query=meiriyidu8&ie=utf8&_sug_=y&_sug_type_=&w=01019900&sut=1533&sst0=1504669191351&lkt=0%2C0%2C0",
+                "http://weixin.sogou.com/weixin?type=1&query=%E5%BC%A0%E9%80%97%E5%BC%A0%E8%8A%B1&ie=utf8&s_from=input&_sug_=n&_sug_type_=",
+                "http://weixin.sogou.com/weixin?type=1&query=%E4%B8%81%E9%A6%99%E5%8C%BB%E7%94%9F&ie=utf8&s_from=input&_sug_=n&_sug_type_=",
+                "http://weixin.sogou.com/weixin?type=1&query=%E9%92%B1%E6%B1%9F%E6%99%9A%E6%8A%A5&ie=utf8&s_from=input&_sug_=n&_sug_type_=",
+                "http://weixin.sogou.com/weixin?type=1&query=%E8%A7%82%E5%AF%9F%E8%80%85%E7%BD%91&ie=utf8&s_from=input&_sug_=n&_sug_type_=",
+                "http://weixin.sogou.com/weixin?type=1&query=%E7%B3%97%E4%BA%8B%E7%99%BE%E7%A7%91&ie=utf8&s_from=input&_sug_=y&_sug_type_=",
+                "http://weixin.sogou.com/weixin?type=1&query=%E7%AC%AC%E5%8D%81%E6%94%BE%E6%98%A0%E5%AE%A4&ie=utf8&s_from=input&_sug_=n&_sug_type_=",
+                "http://weixin.sogou.com/weixin?type=1&query=%E6%B5%99%E6%B1%9F%E5%8F%91%E5%B8%83+&ie=utf8&s_from=input&_sug_=n&_sug_type_=");
+
+        int count = 0;
+        for (int i = 0; i < 200; i++) {
+            final String url = urlLists.get(i % 10);
+            driver.get(url);
+            final Document document = Jsoup.parse(driver.getPageSource());
+            count++;
+            System.out.println(document);
+            System.out.println("=================================");
+            if (document.toString().contains("请输入图中的验证码")) {
+                break;
+            }
+        }
+        System.out.println(count);
+
+    }
+
+    @Test
+    public void get_article_url() throws IOException {
         JBrowserDriver driver = new JBrowserDriver(Settings.builder().timezone(Timezone.ASIA_SHANGHAI).build());
         driver.get("https://mp.weixin.qq.com/profile?src=3&timestamp=1504583131&ver=1&signature=33uh3zsZYPHNwW6fGu*vFp3FE0rOMtA82o8ZUHSy4Gy1MFWxOnh437UsYVAN7pDgllQ2F5HrwCg2RETEyBaxXg==");
         final Document document = Jsoup.parse(driver.getPageSource());
