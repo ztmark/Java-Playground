@@ -125,7 +125,8 @@ public class WeixinCrawler {
             driver.get(articleUrl);
             final Document document = Jsoup.parse(driver.getPageSource());
             final String title = document.title();
-            final String content = new HtmlToPlainText().getPlainText(document);
+            final Element contentElem = document.getElementsByClass("rich_media_content").first();
+            final String content = new HtmlToPlainText().getPlainText(contentElem).replaceAll("\\n+", "\n\n");
             return new Tuple<>(title, content);
         } catch (Exception e) {
             System.err.println("extract article content error " + articleUrl + e.getMessage());

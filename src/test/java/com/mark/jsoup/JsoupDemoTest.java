@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
@@ -30,6 +31,7 @@ import com.machinepublishers.jbrowserdriver.RequestHeaders;
 import com.machinepublishers.jbrowserdriver.Settings;
 import com.machinepublishers.jbrowserdriver.Timezone;
 import com.machinepublishers.jbrowserdriver.UserAgent;
+import com.mark.crawler.WeixinCrawler;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -161,20 +163,37 @@ public class JsoupDemoTest {
     public void get_one_article_text() {
         final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME)
                                                                  .requestHeaders(RequestHeaders.CHROME).timezone(Timezone.ASIA_SHANGHAI).build());
-        driver.get("https://mp.weixin.qq.com/s?src=11&timestamp=1504689136&ver=376&signature=fFR98f*xvWhEAKIc49pDYAujm321NooqIbl5JNTsbQLvhFkFTmOtjoxuXM05OczJg0zJKMFP600onU0LbOhjc8uyFmZMSbf*iUJLBT6JoFcuBF-k2Sk41kdNU9*Hnt2l&new=1");
+        driver.get("https://mp.weixin.qq.com/s?timestamp=1504769886&src=3&ver=1&signature=GnIZgiifnMzG*KUjjQOKn*--YpHykH6zgU90b0q5MNQH1RMLtmKHXIq9ZGBaMSuwFnAB0xFqVPXHuboT4trHbxjGRJq0-xDB6bb8dLmIb17e2bTxO*Pexo7-ARCc36L8uuXmgBXopdha9QaZFn5tD8e8tIHkLuH1DBnUBSnaxp8=");
         final Document document = Jsoup.parse(driver.getPageSource());
+
+        final Element meta_content = document.getElementById("meta_content");
         final Element content = document.getElementsByClass("rich_media_content").first();
 
-        final String plainText = new HtmlToPlainText().getPlainText(content);
-        System.out.println(plainText);
+        final String title = document.title();
+        final HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
+        final String metaContent = htmlToPlainText.getPlainText(meta_content);
+        final String plainText = htmlToPlainText.getPlainText(content);
+        saveArticle(title, plainText);
+    }
 
-        System.out.println("==============");
-        System.out.println("==============");
-        System.out.println("==============");
-        System.out.println("==============");
+    @Test
+    public void downloadImage() {
+        final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME)
+                                                                 .requestHeaders(RequestHeaders.CHROME).timezone(Timezone.ASIA_SHANGHAI).build());
+        driver.get("https://mp.weixin.qq.com/s?timestamp=1504769886&src=3&ver=1&signature=GnIZgiifnMzG*KUjjQOKn*--YpHykH6zgU90b0q5MNQH1RMLtmKHXIq9ZGBaMSuwFnAB0xFqVPXHuboT4trHbxjGRJq0-xDB6bb8dLmIb17e2bTxO*Pexo7-ARCc36L8uuXmgBXopdha9QaZFn5tD8e8tIHkLuH1DBnUBSnaxp8=");
+        final Document document = Jsoup.parse(driver.getPageSource());
 
-        final String s = delHTMLTag(content.toString());
-        System.out.println(s);
+        final Element content = document.getElementsByClass("rich_media_content").first();
+
+        final Elements imgs = content.getElementsByTag("img");
+        for (Element img : imgs) {
+            final String imgUrl = img.attr("data-src");
+            final Element parent = img.parent();
+            parent.prepend("<div>[img]" + imgUrl + "[/img]</div>");
+        }
+        final String plainText = new HtmlToPlainText().getPlainText(content).replaceAll("\\n+", "\n\n");
+
+        saveArticle("test", plainText);
     }
 
     private static String delHTMLTag(String htmlStr){
@@ -195,6 +214,33 @@ public class JsoupDemoTest {
         htmlStr=m_html.replaceAll(""); //过滤html标签
 
         return htmlStr.trim(); //返回文本字符串
+    }
+
+    // 保存到文件
+    private static void saveArticle(String title, String content) {
+        if (content.contains("请输入图中的验证码")) {
+            System.out.println(title + " 获取失败，原因：请求太频繁，需要输入验证码");
+            return;
+        }
+        if (StringUtils.isBlank(title)) {
+            title = "no title ";
+        }
+        File file = new File(title + ".txt");
+        if (file.exists()) {
+            System.err.println(file.getName() + " exists");
+        }
+        try {
+            final boolean success = file.createNewFile();
+            if (success) {
+                try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
+                    writer.write(content);
+                } catch (Exception e) {
+                    System.err.println("write file error");
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("create file error " + e.getMessage());
+        }
     }
 
 
