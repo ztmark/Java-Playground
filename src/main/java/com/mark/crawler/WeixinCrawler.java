@@ -56,6 +56,28 @@ public class WeixinCrawler {
 //        final Tuple<String, String> tuple = new Tuple<>("test", "xxxxxxxxxx xxxxxxxxxxx");
 //        saveArticle(tuple);
 
+
+        for (String name : names) {
+            long start = System.currentTimeMillis();
+
+            System.out.println("Begin crawl " + name);
+            final String pageUrl = weixinPage(name);
+            System.out.println("get " + name + " url => " + pageUrl);
+            final Set<String> urls = extractArticleUrl(pageUrl);
+            System.out.println("get article urls " + urls.size());
+            for (String url : urls) {
+                System.out.println("begin extract content " + url);
+                final Tuple<String, String> tuple = extractArticleContent(url);
+                System.out.println("done get " + tuple.first + " content");
+                saveArticle(tuple);
+                System.out.println("done save article " + tuple.first);
+            }
+
+            long duration = System.currentTimeMillis() - start;
+            System.out.println("done crawl " + name + " it takes " + duration + " milliseconds");
+
+        }
+
     }
 
     // 搜索公众号并获取文章列表地址
@@ -72,7 +94,7 @@ public class WeixinCrawler {
                 return element.attr("href");
             }
         } catch (Exception e) {
-            System.out.println("get wei xin page error " + e.getMessage());
+            System.err.println("get wei xin page error " + e.getMessage());
         }
         return null;
     }
@@ -91,7 +113,7 @@ public class WeixinCrawler {
             }
             return pageUrls;
         } catch (Exception e) {
-            System.out.println("extract article url " + articleListUrl + " error " + e.getMessage());
+            System.err.println("extract article url " + articleListUrl + " error " + e.getMessage());
         }
         return Collections.emptySet();
     }
@@ -106,7 +128,7 @@ public class WeixinCrawler {
             final String content = new HtmlToPlainText().getPlainText(document);
             return new Tuple<>(title, content);
         } catch (Exception e) {
-            System.out.println("extract article content error " + articleUrl + e.getMessage());
+            System.err.println("extract article content error " + articleUrl + e.getMessage());
         }
         return new Tuple<>(null, null);
     }
@@ -124,7 +146,7 @@ public class WeixinCrawler {
         }
         File file = new File(title + ".txt");
         if (file.exists()) {
-            System.out.println(file.getName() + " exists");
+            System.err.println(file.getName() + " exists");
         }
         try {
             final boolean success = file.createNewFile();
@@ -132,11 +154,11 @@ public class WeixinCrawler {
                 try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
                     writer.write(tuple.second);
                 } catch (Exception e) {
-                    System.out.println("write file error");
+                    System.err.println("write file error");
                 }
             }
         } catch (IOException e) {
-            System.out.println("create file error " + e.getMessage());
+            System.err.println("create file error " + e.getMessage());
         }
     }
 
