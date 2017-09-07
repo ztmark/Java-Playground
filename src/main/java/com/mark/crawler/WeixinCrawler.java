@@ -125,13 +125,39 @@ public class WeixinCrawler {
             driver.get(articleUrl);
             final Document document = Jsoup.parse(driver.getPageSource());
             final String title = document.title();
-            final Element contentElem = document.getElementsByClass("rich_media_content").first();
+            Element contentElem = document.getElementsByClass("rich_media_content").first();
+            contentElem = replaceImg(contentElem);
             final String content = new HtmlToPlainText().getPlainText(contentElem).replaceAll("\\n+", "\n\n");
             return new Tuple<>(title, content);
         } catch (Exception e) {
             System.err.println("extract article content error " + articleUrl + e.getMessage());
         }
         return new Tuple<>(null, null);
+    }
+
+    // 转换图片
+    private static Element replaceImg(Element content) {
+        final Elements imgs = content.getElementsByTag("img");
+        for (Element img : imgs) {
+            try {
+                final Element parent = img.parent();
+                final String imgUrl = img.attr("data-src");
+                String url = convertImgUrl(imgUrl);
+                if (StringUtils.isBlank(url)) {
+                    System.err.println("save image error " + imgUrl);
+                    url = imgUrl;
+                }
+                parent.prepend("<div>[img]" + url + "[/img]</div>");
+            } catch (Exception e) {
+                System.err.println("replace img error " + img);
+            }
+        }
+        return content;
+    }
+
+    private static String convertImgUrl(String imgUrl) {
+        // TODO:  save img
+        return imgUrl;
     }
 
     // 保存到文件
