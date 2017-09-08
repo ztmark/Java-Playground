@@ -32,7 +32,7 @@ public class WeixinCrawler {
 
     private static final String searchUrl = "http://weixin.sogou.com/weixin?type=1&query={}&ie=utf8&s_from=input&_sug_=y&_sug_type_=1&w=01015002&oq=&ri=1&sourceid=sugg&sut=0&sst0=1504750542211&lkt=0%2C0%2C0&p=40040108";
 
-    private static List<String> names = Arrays.asList("力哥理财", "三公子的人生记录仪");
+    private static List<String> names = Arrays.asList("苹果控"/*, "煎蛋", "力哥理财", "三公子的人生记录仪"*/);
 
     private static int count = 1;
 
@@ -93,6 +93,7 @@ public class WeixinCrawler {
                 final Element element = elements.get(0);
                 return element.attr("href");
             }
+            driver.quit();
         } catch (Exception e) {
             System.err.println("get wei xin page error " + e.getMessage());
         }
@@ -107,10 +108,18 @@ public class WeixinCrawler {
             final Document document = Jsoup.parse(driver.getPageSource());
             final Elements list = document.getElementsByTag("h4");
             Set<String> pageUrls = new LinkedHashSet<>();
-            String url = "https://mp.weixin.qq.com";
+            String https = "https://mp.weixin.qq.com";
+            String http = "http://mp.weixin.qq.com";
             for (Element element : list) {
-                pageUrls.add(url + element.attr("hrefs"));
+                final String hrefs = element.attr("hrefs");
+                if (StringUtils.isBlank(hrefs)) {
+                    continue;
+                }
+                if (!hrefs.startsWith(http) && !hrefs.startsWith(https)) { // 没有前缀的加上前缀
+                    pageUrls.add(https + hrefs);
+                }
             }
+            driver.quit();
             return pageUrls;
         } catch (Exception e) {
             System.err.println("extract article url " + articleListUrl + " error " + e.getMessage());
@@ -128,6 +137,7 @@ public class WeixinCrawler {
             Element contentElem = document.getElementsByClass("rich_media_content").first();
             contentElem = replaceImg(contentElem);
             final String content = new HtmlToPlainText().getPlainText(contentElem).replaceAll("\\n+", "\n\n");
+            driver.quit();
             return new Tuple<>(title, content);
         } catch (Exception e) {
             System.err.println("extract article content error " + articleUrl + e.getMessage());
@@ -162,6 +172,10 @@ public class WeixinCrawler {
 
     // 保存到文件
     private static void saveArticle(Tuple<String, String> tuple) {
+        if (StringUtils.isBlank(tuple.second)) {
+            System.out.println("saveArticle content is blank title = " + tuple.first);
+            return;
+        }
         String title = tuple.first;
         if (tuple.second.contains("请输入图中的验证码")) {
             System.out.println(title + " 获取失败，原因：请求太频繁，需要输入验证码");
