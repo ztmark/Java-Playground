@@ -32,7 +32,7 @@ public class WeixinCrawler {
 
     private static final String searchUrl = "http://weixin.sogou.com/weixin?type=1&query={}&ie=utf8&s_from=input&_sug_=y&_sug_type_=1&w=01015002&oq=&ri=1&sourceid=sugg&sut=0&sst0=1504750542211&lkt=0%2C0%2C0&p=40040108";
 
-    private static List<String> names = Arrays.asList("苹果控"/*, "煎蛋", "力哥理财", "三公子的人生记录仪"*/);
+    private static List<String> names = Arrays.asList("观点", "苹果控"/*, "煎蛋", "力哥理财", "三公子的人生记录仪"*/);
 
     private static int count = 1;
 
