@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -22,6 +23,27 @@ public class ZookeeperGetDataUsage implements Watcher {
     private static Stat stat = new Stat();
 
     public static void main(String[] args) throws InterruptedException, IOException, KeeperException {
+//        syncGetData();
+        asyncGetData();
+    }
+
+    private static void asyncGetData() throws IOException, InterruptedException {
+        zookeeper = new ZooKeeper("localhost:2181", 5000, new ZookeeperGetDataUsage());
+        connectLatch.await();
+        zookeeper.getData(path, true, new AsyncCallback.DataCallback() {
+            @Override
+            public void processResult(int rc, String path, Object ctx, byte[] data, Stat stat) {
+                System.out.println(rc);
+                System.out.println(path);
+                System.out.println(ctx);
+                System.out.println(new String(data));
+                System.out.println(stat);
+            }
+        }, "I am context");
+        TimeUnit.SECONDS.sleep(1);
+    }
+
+    private static void syncGetData() throws IOException, InterruptedException, KeeperException {
         zookeeper = new ZooKeeper("localhost:2181", 5000, new ZookeeperGetDataUsage());
         connectLatch.await();
         final byte[] data = zookeeper.getData(path, true, stat);
