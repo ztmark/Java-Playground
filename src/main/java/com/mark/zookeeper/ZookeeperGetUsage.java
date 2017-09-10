@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 
 /**
  * Author: Mark
@@ -22,6 +24,30 @@ public class ZookeeperGetUsage implements Watcher {
     private static ZooKeeper zooKeeper;
 
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
+//        syncGet();
+        asyncGet();
+    }
+
+    private static void asyncGet() throws IOException, InterruptedException, KeeperException {
+        zooKeeper = new ZooKeeper("localhost:2181", 5000, new ZookeeperGetUsage());
+        connectLatch.await();
+        String path = "/test-zookeeper";
+        final String c1 = zooKeeper.create(path + "/c1", "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        final List<String> children = zooKeeper.getChildren(path, true);
+        System.out.println(children);
+        zooKeeper.getChildren(path, true, (rc, path1, ctx, children1, stat) -> {
+            System.out.println("result");
+            System.out.println(rc);
+            System.out.println(path1);
+            System.out.println(ctx);
+            System.out.println(children1);
+            System.out.println(stat);
+        }, "I am context");
+        final String c2 = zooKeeper.create(path + "/c2", "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        TimeUnit.SECONDS.sleep(1);
+    }
+
+    private static void syncGet() throws IOException, InterruptedException, KeeperException {
         zooKeeper = new ZooKeeper("localhost:2181", 5000, new ZookeeperGetUsage());
         connectLatch.await();
         String path = "/test-zookeeper";
