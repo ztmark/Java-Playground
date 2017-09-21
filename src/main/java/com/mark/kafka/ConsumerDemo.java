@@ -7,7 +7,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 
 /**
  * Author: Mark
@@ -16,13 +15,14 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 public class ConsumerDemo {
 
     public static void main(String[] args) {
+
         Properties consumerProp = new Properties();
         consumerProp.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         consumerProp.put(ConsumerConfig.GROUP_ID_CONFIG, "test");
         consumerProp.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProp.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
-        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(consumerProp)) {
+        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProp)) {
 
             while (true) {
                 consumer.subscribe(Collections.singleton("test"));

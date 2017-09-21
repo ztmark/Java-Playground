@@ -1,14 +1,10 @@
 package com.mark.kafka;
 
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.Metric;
-import org.apache.kafka.common.MetricName;
 
 /**
  * Author: Mark
@@ -17,7 +13,7 @@ import org.apache.kafka.common.MetricName;
 public class ProducerDemo {
 
     public static void main(String[] args) throws InterruptedException {
-        ProducerRecord<String, String> record = new ProducerRecord<String, String>("test", "just a message 4");
+        ProducerRecord<String, String> record = new ProducerRecord<>("test", "just a message");
         Properties kafkaProperties = new Properties();
         kafkaProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         kafkaProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
@@ -28,6 +24,7 @@ public class ProducerDemo {
 //            final RecordMetadata recordMetadata = producer.send(record).get();
 //            System.out.println(recordMetadata);
 
+            // callback
             producer.send(record, (metadata, exception) -> {
                 if (exception != null) {
                     System.out.println(exception.getMessage());
