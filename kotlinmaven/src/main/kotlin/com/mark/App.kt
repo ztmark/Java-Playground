@@ -1,5 +1,7 @@
 package com.mark
 
+import java.util.*
+
 /**
  * Author: Mark
  * Date  : 2017/5/21
@@ -12,16 +14,40 @@ val persons = listOf(Person("Mark"), Person("Jim", 23))
 val old = persons.maxBy { it.age ?: 0 }
 
 fun main(args: Array<String>) {
-    println("Hello $old")
-    val r1 = Rectangle(height, width)
-    val r2 = Rectangle(height, width + 1)
-    println(r1.isSquare)
-    println(r2.isSquare)
-    println(City.BEIJING.name)
-    println(place(City.SHANGHAI))
+//    println("Hello $old")
+//    val r1 = Rectangle(height, width)
+//    val r2 = Rectangle(height, width + 1)
+//    println(r1.isSquare)
+//    println(r2.isSquare)
+//    println(City.BEIJING.name)
+//    println(place(City.SHANGHAI))
+//
+//    println(eval(Sum(Num(1), Sum(Num(2), Num(3)))))
 
+//    iterateMap()
 
-    println(eval(Sum(Num(1), Sum(Num(2), Num(3)))))
+    println(isLetter('3'))
+    println(isLetter('d'))
+    println(isLetter('*'))
+    println(isNotDigit('*'))
+    println(isNotDigit('d'))
+    println(isNotDigit('4'))
+
+}
+
+private fun isLetter(c: Char) = c in 'A'..'Z' || c in 'a'..'z'
+
+private fun isNotDigit(c: Char) = c !in '0'..'9'
+
+private fun iterateMap() {
+    val binaryReps = TreeMap<Char, String>()
+    for (c in 'A'..'F') {
+        val toBinaryString = Integer.toBinaryString(c.toInt())
+        binaryReps[c] = toBinaryString
+    }
+    for ((c, b) in binaryReps) {
+        println("$c = $b")
+    }
 }
 
 fun place(city: City) = when (city) {
