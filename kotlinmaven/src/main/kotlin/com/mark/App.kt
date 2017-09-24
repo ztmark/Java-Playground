@@ -19,6 +19,9 @@ fun main(args: Array<String>) {
     println(r2.isSquare)
     println(City.BEIJING.name)
     println(place(City.SHANGHAI))
+
+
+    println(eval(Sum(Num(1), Sum(Num(2), Num(3)))))
 }
 
 fun place(city: City) = when (city) {
@@ -43,12 +46,15 @@ class Num(val num: Int) : Expr
 
 class Sum(val left: Expr, val right: Expr) : Expr
 
-fun eval(expr: Expr): Int {
-    if (expr is Num) {
-        return expr.num
+fun eval(expr: Expr): Int =
+    /*if (expr is Num) expr.num
+    else if (expr is Sum) {
+        eval(expr.left) + eval(expr.right)
+    } else {
+        throw IllegalArgumentException("Unknown Expression")
+    }*/
+    when(expr) {
+        is Num -> expr.num
+        is Sum -> eval(expr.left) + eval(expr.right)
+        else -> throw IllegalArgumentException("Unknown Expression")
     }
-    if (expr is Sum) {
-        return eval(expr.left) + eval(expr.right)
-    }
-    throw IllegalArgumentException("Unknown Expression")
-}
