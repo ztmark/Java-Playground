@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -17,6 +18,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
@@ -30,9 +32,9 @@ import com.machinepublishers.jbrowserdriver.UserAgent;
  */
 public class WeixinCrawler {
 
-    private static final String searchUrl = "http://weixin.sogou.com/weixin?type=1&query={}&ie=utf8&s_from=input&_sug_=y&_sug_type_=1&w=01015002&oq=&ri=1&sourceid=sugg&sut=0&sst0=1504750542211&lkt=0%2C0%2C0&p=40040108";
+    private static final String searchUrl = "http://weixin.sogou.com/weixin?type=1&query={}&ie=utf8&s_from=input&_sug_=y&_sug_type_=";
 
-    private static List<String> names = Arrays.asList("观点", "苹果控"/*, "煎蛋", "力哥理财", "三公子的人生记录仪"*/);
+    private static List<String> names = Arrays.asList(/*"jiemacaishang",*/ "darenshuoqian");
 
     private static int count = 1;
 
@@ -63,14 +65,14 @@ public class WeixinCrawler {
             System.out.println("Begin crawl " + name);
             final String pageUrl = weixinPage(name);
             System.out.println("get " + name + " url => " + pageUrl);
-            final Set<String> urls = extractArticleUrl(pageUrl);
+            final List<Tuple<String, String>> urls = extractArticleUrl(pageUrl);
             System.out.println("get article urls " + urls.size());
-            for (String url : urls) {
-                System.out.println("begin extract content " + url);
-                final Tuple<String, String> tuple = extractArticleContent(url);
-                System.out.println("done get " + tuple.first + " content");
-                saveArticle(tuple);
-                System.out.println("done save article " + tuple.first);
+            for (Tuple<String, String> tuple : urls) {
+                System.out.println("begin extract content " + tuple.first + " url=" + tuple.second);
+                final Tuple<String, String> content = extractArticleContent(tuple.second);
+                System.out.println("done get " + content.first + " content");
+                saveArticle(content);
+                System.out.println("done save article " + content.first);
             }
 
             long duration = System.currentTimeMillis() - start;
@@ -101,30 +103,40 @@ public class WeixinCrawler {
     }
 
     // 获取每一个文章的 URL
-    private static Set<String> extractArticleUrl(String articleListUrl) {
+    private static List<Tuple<String, String>> extractArticleUrl(String articleListUrl) {
         try {
             final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME).requestHeaders(RequestHeaders.CHROME).build());
             driver.get(articleListUrl);
             final Document document = Jsoup.parse(driver.getPageSource());
             final Elements list = document.getElementsByTag("h4");
-            Set<String> pageUrls = new LinkedHashSet<>();
+            List<Tuple<String, String>> pageUrls = new ArrayList<>();
             String https = "https://mp.weixin.qq.com";
             String http = "http://mp.weixin.qq.com";
             for (Element element : list) {
-                final String hrefs = element.attr("hrefs");
+                String hrefs = element.attr("hrefs");
                 if (StringUtils.isBlank(hrefs)) {
                     continue;
                 }
                 if (!hrefs.startsWith(http) && !hrefs.startsWith(https)) { // 没有前缀的加上前缀
-                    pageUrls.add(https + hrefs);
+                    hrefs = https + hrefs;
                 }
+
+                String title;
+                final Element logo = element.getElementById("copyright_logo");
+                if (logo != null) { // 如果有 原创 标签
+                    final Node titleNode = logo.nextSibling();
+                    title = titleNode.toString();
+                } else { // 没有原创标签
+                    title = element.text();
+                }
+                pageUrls.add(new Tuple<>(title, hrefs));
             }
             driver.quit();
             return pageUrls;
         } catch (Exception e) {
             System.err.println("extract article url " + articleListUrl + " error " + e.getMessage());
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     // 获取文章标题和内容
