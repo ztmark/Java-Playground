@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,13 +15,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +29,6 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.machinepublishers.jbrowserdriver.JBrowserDriver;
-import com.machinepublishers.jbrowserdriver.RequestHeaders;
-import com.machinepublishers.jbrowserdriver.Settings;
-import com.machinepublishers.jbrowserdriver.UserAgent;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -48,19 +45,23 @@ public class WeixinCrawlerManual {
 
     private static final String searchUrl = "http://weixin.sogou.com/weixin?type=1&query={}&ie=utf8&s_from=input&_sug_=y&_sug_type_=";
 
-    private static List<String> names = Arrays.asList(/*"jiemacaishang",*/ "darenshuoqian");
+    private static List<String> names = Arrays.asList("jiemacaishang"/*, "darenshuoqian"*/);
 
     private static int count = 1;
 
-    private static final OkHttpClient client = new OkHttpClient.Builder().readTimeout(50000, TimeUnit.SECONDS).build();
+    private static final OkHttpClient client = new OkHttpClient.Builder().readTimeout(5000, TimeUnit.SECONDS).build();
 
     public static void main(String[] args) {
-
 
         final String pageUrl = weixinPage("darenshuoqian");
         System.out.println(pageUrl);
         final List<Article> articles = extractArticleUrl(pageUrl);
         System.out.println(articles);
+        for (Article article : articles) {
+            final Article article1 = extractArticleContent(article);
+            System.out.println(article1);
+            saveArticle(article1);
+        }
 
 
 //        for (String name : names) {
@@ -91,6 +92,7 @@ public class WeixinCrawlerManual {
 
         final String url = StringUtils.replaceOnce(searchUrl, "{}", weixinName);
         final Request request = new Request.Builder().url(url).build();
+        String result = null;
         try (final Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 log.info("weixinPage request failed code={} ", response.code());
@@ -104,12 +106,12 @@ public class WeixinCrawlerManual {
             final Elements elements = document.getElementsByAttributeValue("uigs", "account_name_0");
             if (elements != null && elements.size() > 0) {
                 final Element element = elements.get(0);
-                return element.attr("href");
+                result = element.attr("href");
             }
         } catch (Exception e) {
             System.err.println("get wei xin page error " + e.getMessage());
         }
-        return null;
+        return StringEscapeUtils.unescapeHtml(result);
     }
 
     // 获取每一个文章的 URL
@@ -161,7 +163,7 @@ public class WeixinCrawlerManual {
                     content_url = "https://mp.weixin.qq.com" + content_url;
                 }
                 final Article article = new Article();
-                article.contentUrl = content_url;
+                article.contentUrl = StringEscapeUtils.unescapeHtml(content_url);
                 article.title = app_msg_ext_info.getString("title");
                 article.date = comm_msg_info.getLong("datetime");
                 articles.add(article);
@@ -174,21 +176,27 @@ public class WeixinCrawlerManual {
     }
 
     // 获取文章标题和内容
-    private static Tuple<String, String> extractArticleContent(String articleUrl) {
-        try {
-            final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME).requestHeaders(RequestHeaders.CHROME).build());
-            driver.get(articleUrl);
-            final Document document = Jsoup.parse(driver.getPageSource());
-            final String title = document.title();
-            Element contentElem = document.getElementsByClass("rich_media_content").first();
+    private static Article extractArticleContent(Article article) {
+        final Request request = new Request.Builder().url(article.contentUrl).build();
+        try (final Response response = client.newCall(request).execute();) {
+
+            if (!response.isSuccessful()) {
+                log.info("extractArticleContent request failed code={} ", response.code());
+            }
+            final ResponseBody body = response.body();
+            if (body == null) {
+                log.info("extractArticleContent response body is null");
+                return article;
+            }
+
+            final Document document = Jsoup.parse(body.string());
+            Element contentElem = document.getElementById("js_content");
             contentElem = replaceImg(contentElem);
-            final String content = new HtmlToPlainText().getPlainText(contentElem).replaceAll("\\n+", "\n\n");
-            driver.quit();
-            return new Tuple<>(title, content);
+            article.content = new HtmlToPlainText().getPlainText(contentElem).replaceAll("\\n+", "\n\n");
         } catch (Exception e) {
-            System.err.println("extract article content error " + articleUrl + e.getMessage());
+            log.error("extract article content {} error {}", article.contentUrl, e.getMessage());
         }
-        return new Tuple<>(null, null);
+        return article;
     }
 
     // 转换图片
@@ -217,13 +225,13 @@ public class WeixinCrawlerManual {
     }
 
     // 保存到文件
-    private static void saveArticle(Tuple<String, String> tuple) {
-        if (StringUtils.isBlank(tuple.second)) {
-            System.out.println("saveArticle content is blank title = " + tuple.first);
+    private static void saveArticle(Article article) {
+        if (StringUtils.isBlank(article.content)) {
+            System.out.println("saveArticle content is blank title = " + article.title);
             return;
         }
-        String title = tuple.first;
-        if (tuple.second.contains("请输入图中的验证码")) {
+        String title = article.title;
+        if (article.content.contains("请输入图中的验证码")) {
             System.out.println(title + " 获取失败，原因：请求太频繁，需要输入验证码");
             return;
         }
@@ -238,8 +246,8 @@ public class WeixinCrawlerManual {
         try {
             final boolean success = file.createNewFile();
             if (success) {
-                try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
-                    writer.write(tuple.second);
+                try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8.toString()))) {
+                    writer.write(article.content);
                 } catch (Exception e) {
                     System.err.println("write file error");
                 }
@@ -252,6 +260,7 @@ public class WeixinCrawlerManual {
     static class Article {
         String title;
         String contentUrl;
+        String content;
         long date;
 
         @Override
@@ -259,6 +268,7 @@ public class WeixinCrawlerManual {
             final StringBuilder sb = new StringBuilder("Article{");
             sb.append("title='").append(title).append('\'');
             sb.append(", contentUrl='").append(contentUrl).append('\'');
+            sb.append(", content='").append(content).append('\'');
             sb.append(", date=").append(date);
             sb.append('}');
             return sb.toString();
