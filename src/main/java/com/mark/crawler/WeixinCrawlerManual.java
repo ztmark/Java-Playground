@@ -44,7 +44,12 @@ public class WeixinCrawlerManual {
 
     private static final String searchUrl = "http://weixin.sogou.com/weixin?type=1&query={}&ie=utf8&s_from=input&_sug_=y&_sug_type_=";
 
-    private static List<String> names = Arrays.asList("jiemacaishang"/*, "darenshuoqian"*/);
+    private static List<String> names = Arrays.asList(
+            "jiemacaishang", "darenshuoqian", "laoqianshuoqian", "kkmoney666", "weifusd", "mycaijing", "tancaijing", "qgq1818",
+            "jinrongtegong", "housetencent", "p2pmoney", "cainiaolc", "jane7ducai", "licaitt", "fengyuhuangshan", "cainvdangjia",
+            "cgbj518", "kongfuf", "qijunjie82", "licaizhishi8", "gaotiantalkshow", "mymoney888 ", "xueqiujinghua", "xuetouzilicai",
+            "LicaiApp", "veekn365", "mumuxuecai", "lrgq2016", "sangongzi0906", "yangmaoyijie", "chinaetfs", "gh_9baf199c66f1", "buy-baoxian",
+            "licai1999", "auto10bagger", "forcode2046", "chiotc88", "ZhangYinyin0903", "Linda20160101");
 
     private static int count = 1;
 
@@ -138,6 +143,9 @@ public class WeixinCrawlerManual {
 
     // 获取每一个文章的 URL
     private static List<Article> extractArticleUrl(String articleListUrl) {
+        if (StringUtils.isBlank(articleListUrl)) {
+            return Collections.emptyList();
+        }
         final Request request = new Request.Builder().url(articleListUrl).build();
         try (final Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {

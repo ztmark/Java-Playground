@@ -5,6 +5,9 @@
     debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
  -->
 <configuration>
+
+    <property name="ENCODER_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss SSS} [%thread] %-5level %logger{8-} - %msg%n"/>
+
     <appender scan="true" sacnPeriod="60 seconds" debug="true">
         <!-- 定义变量APP_NAME用于区分不同应用的的记录 -->
         <property name="APP_NAME" value="bills"/>
@@ -18,7 +21,6 @@
            %msg 输出应用程序提供的信息
            %n输出平台相关的分行符“\n”或者“\r\n”
          -->
-        <property name="ENCODER_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss SSS} [%thread] %-5level %logger{8-} - %msg%n"/>
         <contextName>${APP_NAME}</contextName>
 
         <!-- appender是<configuration>的子节点，是负责写日志的组件。
