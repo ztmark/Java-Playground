@@ -11,10 +11,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.examples.HtmlToPlainText;
+import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -22,6 +25,9 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 import com.machinepublishers.jbrowserdriver.RequestHeaders;
 import com.machinepublishers.jbrowserdriver.Settings;
@@ -46,13 +52,15 @@ public class WeixinCrawlerManual {
 
     private static int count = 1;
 
-    private static final OkHttpClient client = new OkHttpClient.Builder().readTimeout(5000, TimeUnit.SECONDS).build();
+    private static final OkHttpClient client = new OkHttpClient.Builder().readTimeout(50000, TimeUnit.SECONDS).build();
 
     public static void main(String[] args) {
 
 
         final String pageUrl = weixinPage("darenshuoqian");
         System.out.println(pageUrl);
+        final List<Article> articles = extractArticleUrl(pageUrl);
+        System.out.println(articles);
 
 
 //        for (String name : names) {
@@ -105,36 +113,60 @@ public class WeixinCrawlerManual {
     }
 
     // 获取每一个文章的 URL
-    private static List<Tuple<String, String>> extractArticleUrl(String articleListUrl) {
-        try {
-            final JBrowserDriver driver = new JBrowserDriver(Settings.builder().userAgent(UserAgent.CHROME).requestHeaders(RequestHeaders.CHROME).build());
-            driver.get(articleListUrl);
-            final Document document = Jsoup.parse(driver.getPageSource());
-            final Elements list = document.getElementsByTag("h4");
-            List<Tuple<String, String>> pageUrls = new ArrayList<>();
-            String https = "https://mp.weixin.qq.com";
-            String http = "http://mp.weixin.qq.com";
-            for (Element element : list) {
-                String hrefs = element.attr("hrefs");
-                if (StringUtils.isBlank(hrefs)) {
+    private static List<Article> extractArticleUrl(String articleListUrl) {
+        final Request request = new Request.Builder().url(articleListUrl).build();
+        try (final Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                log.info("extractArticleUrl request failed code={} ", response.code());
+            }
+            final ResponseBody body = response.body();
+            if ( body == null) {
+                log.info("extractArticleUrl response body is null");
+                return Collections.emptyList();
+            }
+
+            final String content = body.string();
+            final Document document = Jsoup.parse(content);
+
+            String data = null;
+            // 页面的中的格式为： var msgList = {...}; {}是内容
+            final Pattern pattern = Pattern.compile("\\r\\n.*msgList\\s=\\s(\\{.*});.*");
+            final Elements scripts = document.getElementsByTag("script");
+            for (Element script : scripts) {
+                for (DataNode dataNode : script.dataNodes()) {
+                    final String wholeData = dataNode.getWholeData();
+                    final Matcher matcher = pattern.matcher(wholeData);
+                    if (matcher.find()) {
+                        data = matcher.group(1);
+                    }
+                }
+            }
+
+            if (StringUtils.isBlank(data)) {
+                return Collections.emptyList();
+            }
+
+            List<Article> articles = new ArrayList<>();
+            final JSONObject jsonObject = JSON.parseObject(data);
+            final JSONArray list = jsonObject.getJSONArray("list");
+            for (int i = 0; i < list.size(); i++) {
+                final JSONObject articleObj = list.getJSONObject(i);
+                final JSONObject app_msg_ext_info = articleObj.getJSONObject("app_msg_ext_info");
+                final JSONObject comm_msg_info = articleObj.getJSONObject("comm_msg_info");
+                String content_url = app_msg_ext_info.getString("content_url");
+                if (StringUtils.isBlank(content_url)) {
                     continue;
                 }
-                if (!hrefs.startsWith(http) && !hrefs.startsWith(https)) { // 没有前缀的加上前缀
-                    hrefs = https + hrefs;
+                if (!content_url.startsWith("https://mp.weixin.qq.com") || !content_url.startsWith("http://mp.weixin.qq.com")) {
+                    content_url = "https://mp.weixin.qq.com" + content_url;
                 }
-
-                String title;
-                final Element logo = element.getElementById("copyright_logo");
-                if (logo != null) { // 如果有 原创 标签
-                    final Node titleNode = logo.nextSibling();
-                    title = titleNode.toString();
-                } else { // 没有原创标签
-                    title = element.text();
-                }
-                pageUrls.add(new Tuple<>(title, hrefs));
+                final Article article = new Article();
+                article.contentUrl = content_url;
+                article.title = app_msg_ext_info.getString("title");
+                article.date = comm_msg_info.getLong("datetime");
+                articles.add(article);
             }
-            driver.quit();
-            return pageUrls;
+            return articles;
         } catch (Exception e) {
             System.err.println("extract article url " + articleListUrl + " error " + e.getMessage());
         }
@@ -214,6 +246,22 @@ public class WeixinCrawlerManual {
             }
         } catch (IOException e) {
             System.err.println("create file error " + e.getMessage());
+        }
+    }
+
+    static class Article {
+        String title;
+        String contentUrl;
+        long date;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Article{");
+            sb.append("title='").append(title).append('\'');
+            sb.append(", contentUrl='").append(contentUrl).append('\'');
+            sb.append(", date=").append(date);
+            sb.append('}');
+            return sb.toString();
         }
     }
 
