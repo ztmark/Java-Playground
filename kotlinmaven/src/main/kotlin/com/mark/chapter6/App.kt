@@ -1,5 +1,7 @@
 package com.mark.chapter6
 
+import java.io.BufferedReader
+
 /**
  * Author: Mark
  * Date  : 2017/9/27
@@ -36,4 +38,18 @@ fun printShippingLabel(person: Person) {
 
 fun sendEmailTo(who: String) {
     println("Send email to $who")
+}
+
+fun readInts(reader: BufferedReader): List<Int?> {
+    val ints = ArrayList<Int?>()
+    for (line in reader.lineSequence()) {
+        try {
+            val num = line.toInt()
+            ints.add(num)
+        } catch (e: NumberFormatException) {
+            ints.add(null)
+        }
+    }
+//    return reader.lineSequence().map { it.toIntOrNull() }.filterNotNull().toList()
+    return ints
 }
