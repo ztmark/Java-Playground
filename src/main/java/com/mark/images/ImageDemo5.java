@@ -14,8 +14,8 @@ public class ImageDemo5 {
 
 
     public static void main(String[] args) throws Exception {
-        final BufferedImage bufferedImage = coverImage("base.png", "first.png", 145, 1450, 180, 180);
-        ImageIO.write(bufferedImage, "png", new File("he.png"));
+        final BufferedImage bufferedImage = coverImage("test.png", "qrcode.png", 145, 1630, 177, 177);
+        ImageIO.write(bufferedImage, "png", new File("test1.png"));
     }
 
     /**
