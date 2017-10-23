@@ -14,7 +14,25 @@ public class ImageDemo5 {
 
 
     public static void main(String[] args) throws Exception {
-        final BufferedImage bufferedImage = coverImage("test.png", "qrcode.png", 145, 1630, 177, 177);
+        BufferedImage bufferedImage = coverImage("template.png", "icon.jpg", 273, 38, 96, 96);
+
+        File coverFile = new File("qrcode.png"); //覆盖层
+        BufferedImage coverImg = ImageIO.read(coverFile);
+
+        bufferedImage = coverImage(bufferedImage, coverImg, 145, 1628, 177, 177);
+
+        Font font = Font.createFont(Font.TRUETYPE_FONT, new File("FangZhengLanTingHeiJianTi.ttf")).deriveFont(28f);
+        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+        Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
+        // 抗锯齿
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        g.setFont(font);
+        g.setColor(Color.BLACK);
+        g.drawString("用户昵称", 380, 120);
+        g.dispose();
+
         ImageIO.write(bufferedImage, "png", new File("test1.png"));
     }
 
