@@ -12,6 +12,7 @@
         <module>web</module>
         <module>kotlinmaven</module>
         <module>code-kata</module>
+        <module>vertx-project</module>
     </modules>
 
     <dependencies>
