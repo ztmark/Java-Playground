@@ -1,9 +1,6 @@
 package io.github.ztmark;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
-import java.net.ServerSocket;
 
 import org.junit.After;
 import org.junit.Before;
