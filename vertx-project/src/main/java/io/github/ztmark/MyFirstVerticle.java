@@ -62,11 +62,11 @@ public class MyFirstVerticle extends AbstractVerticle {
 
         router.route("/assets/*").handler(StaticHandler.create("assets"));
 
-        router.route("/api/whiskies").handler(this::getAll);
+        router.get("/api/whiskies").handler(this::getAll);
 
         router.route("/api/whiskies*").handler(BodyHandler.create());
-        router.post("/api/whiskies").handler(this::addOne);
 
+        router.post("/api/whiskies").handler(this::addOne);
         router.delete("/api/whiskies/:id").handler(this::deleteOne);
         router.get("/api/whiskies/:id").handler(this::getOne);
         router.put("/api/whiskies/:id").handler(this::updateOne);
