@@ -1,5 +1,7 @@
 {
   "http.port": ${
   http.port
-}
+},
+"url": "jdbc:hsqldb:file:db/whiskies",
+"driver_class": "org.hsqldb.jdbcDriver"
 }

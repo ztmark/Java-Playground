@@ -1,13 +1,12 @@
 package io.github.ztmark;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Author: Mark
  * Date  : 2017/11/25
  */
 public class Whisky {
-    private static final AtomicInteger COUNTER = new AtomicInteger();
 
     private final int id;
 
@@ -16,13 +15,23 @@ public class Whisky {
     private String origin;
 
     public Whisky(String name, String origin) {
-        this.id = COUNTER.getAndIncrement();
+        this(-1, name, origin);
+    }
+
+    public Whisky() {
+        this.id = -1;
+    }
+
+    public Whisky(int id, String name, String origin) {
+        this.id = id;
         this.name = name;
         this.origin = origin;
     }
 
-    public Whisky() {
-        this.id = COUNTER.getAndIncrement();
+    public Whisky(JsonObject jsonObject) {
+        this.id = jsonObject.getInteger("ID");
+        this.name = jsonObject.getString("NAME");
+        this.origin = jsonObject.getString("ORIGIN");
     }
 
     public String getName() {

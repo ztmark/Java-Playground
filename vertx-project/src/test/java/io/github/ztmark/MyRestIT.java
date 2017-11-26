@@ -38,7 +38,6 @@ public class MyRestIT {
                 .extract()
                 .jsonPath()
                 .getInt("find { it.name=='Bowmore 15 Years Laimrig' }.id");
-        System.out.println(id);
         get("/api/whiskies/" + id)
                 .then()
                 .assertThat()
