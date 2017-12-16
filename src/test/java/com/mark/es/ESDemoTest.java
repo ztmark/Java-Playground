@@ -32,7 +32,7 @@ public class ESDemoTest {
 
     @Test
     public void addData() {
-        final UserDO userDO = new UserDO();
+        /*final UserDO userDO = new UserDO();
         userDO.setUid(1L);
         userDO.setFansCount(0L);
         userDO.setName("Mark");
@@ -41,7 +41,7 @@ public class ESDemoTest {
         IndexQuery indexQuery = new IndexQueryBuilder()
                 .withId("1")
                 .withObject(userDO).build();
-        template.bulkIndex(Collections.singletonList(indexQuery));
+        template.bulkIndex(Collections.singletonList(indexQuery));*/
     }
 
 
